@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Catalogo de Estados</title>    
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../../js/util.js"/>        
+    </h:head>
+    <h:body>
+        <h1>Catalogos</h1>
+        <h:form id="formEstado" >
+            <p:growl id="msgsCat" showDetail="true"/>
+            <p:messages showDetail="true" closable="true"/>
+            <p:panel header="Catalogo de estados" id="panelEstado">                                                    
+                <h:panelGrid columns="1">
+                    <p:dataTable id="tableEstado" var="estado" value="#{mktCobhDimEstadoBean.estados}" rowKey="#{estado.pkEstado}" selection="#{mktCobhDimEstadoBean.estadoSeleccionado}" selectionMode="single" paginator="true" paginatorPosition="bottom" rows="20" widgetVar="vtableEstado" >
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Filtro Rapido:" />
+                                <p:inputText id="globalFilter" onkeyup="PF('vtableEstado').filter()" style="width:200px" placeholder="buscar....."/>
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/excel.png" />
+                                    <p:dataExporter type="xls" encoding="ISO-8859-1" target="tableEstado" fileName="Estados" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/pdf.png" />
+                                    <p:dataExporter type="pdf" encoding="ISO-8859-1" target="tableEstado" fileName="Estados" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage  url="../../../images/csv.png" />
+                                    <p:dataExporter encoding="ISO-8859-1" type="csv" target="tableEstado" fileName="Estados" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/xml.png" />
+                                    <p:dataExporter type="xml" encoding="ISO-8859-1" target="tableEstado" fileName="Estados" pageOnly="true" />
+                                </h:commandLink>                                                        
+
+                                <p:graphicImage url="../../../images/importarexcel.png" onclick="PF('frmExcel').show();" style="cursor: pointer;"/>
+                                <p:graphicImage url="../../../images/grafica.png" onclick="PF('frmEstadoGraficaSwf').show();" style="cursor: pointer;" />                                                               
+                                <p:graphicImage url="../../../images/grafica.png" onclick="PF('frmEstadoGraficaLineas').show();" style="cursor: pointer;" />                                                               
+                                
+                                <p:commandLink  update=":formEstado:panelEstado,:formDialogEstado:panelDialogEstado" actionListener="#{mktCobhDimEstadoBean.refreshEstados}" >
+                                    <p:graphicImage url="../../../images/refrescar.png" style="cursor: pointer;"/>
+                                </p:commandLink>
+
+
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column headerText="Num.Estado" filterBy="#{estado.pkEstado}" sortBy="#{estado.pkEstado}" >
+                            <h:outputText value="#{estado.pkEstado}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Clave" filterBy="#{estado.gvEstado}" filterMatchMode="contains" sortBy="#{estado.pkEstado}">
+                            <h:outputText value="#{estado.gvEstado}"/>
+                        </p:column>
+                        <p:column headerText="Nombre Estado" filterBy="#{estado.estado}" sortBy="#{estado.pkEstado}" filterMatchMode="contains">
+                            <h:outputText value="#{estado.estado}"/>
+                        </p:column>   
+
+                        <f:facet name="footer">
+                            Total de registros #{mktCobhDimEstadoBean.estados.size()}
+                            Suma Total: #{mktCobhDimEstadoBean.sumaEstado()}
+                        </f:facet>                        
+
+                        <p:ajax event="rowSelect" update=":formEstado:panelEstado,:formDialogEstado:panelDialogEstado" listener="#{mktCobhDimEstadoBean.selectEstado}" onsuccess="PF('dialogDetalle').show();"/>
+
+                    </p:dataTable>
+
+                    <h3>Exportar</h3>
+
+
+                </h:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="Nuevo" update=":formEstado:panelEstado,:formDialogEstado:panelDialogEstado" actionListener="#{mktCobhDimEstadoBean.nuevoEstado}" oncomplete="PF('dialogDetalle').show();"/>
+                    <p:commandButton value="Importar Excel" onclick="PF('frmExcel').show()"/>
+                    <p:commandButton value="Refrescar" update=":formEstado:panelEstado,:formDialogEstado:panelDialogEstado" actionListener="#{mktCobhDimEstadoBean.refreshEstados}"/>
+                    <p:commandButton value="Exportar Excel" update="formEstado"/>                          
+                    
+                </f:facet>
+            </p:panel>
+        </h:form>              
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+        <p:dialog header="DETALLE DE ESTADO" widgetVar="dialogDetalle" minHeight="40" modal="true" id="dialogDetalle">
+            <h:form id="formDialogEstado">
+                <p:growl id="msgsDialogEstado" showDetail="true"/>
+                <p:panel>
+                    <h:panelGrid columns="4" cellpadding="5px" id="panelDialogEstado">
+                        <p:outputLabel for="gvestado" value="Clave Estado:" />
+                        <p:inputText id="gvestado" maxlength="20" value="#{mktCobhDimEstadoBean.estadoNuevo.gvEstado}"/>
+                        <p:outputLabel for="estado" value="Nombre Estado:" />
+                        <p:inputText id="estado" required="true" maxlength="50" value="#{mktCobhDimEstadoBean.estadoNuevo.estado}"/>                                                   
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2" cellspacing="10px">
+                                <p:commandButton value="Guardar" update=":formEstado:tableEstado,:formDialogEstado" actionListener="#{mktCobhDimEstadoBean.saveEstado}" onsuccess="PF('dialogDetalle').hide();">
+                                    <p:confirm message="Esta seguro?" header="Guardar"/>
+                                </p:commandButton>
+                                <p:commandButton value="Eliminar" update="formEstado" actionListener="#{mktCobhDimEstadoBean.eliminarEstado}" rendered="#{mktCobhDimEstadoBean.estadoNuevo.pkEstado ne null ? true : false}" onsuccess="PF('dialogDetalle').hide();">
+                                    <p:confirm message="Esta seguro?" header="Eliminar"/>
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </f:facet>
+                    </h:panelGrid>                
+                </p:panel>
+            </h:form>
+        </p:dialog>
+        <p:ajaxStatus style="position: fixed;display:block;bottom:100px;right: 20px;height:24px;"  onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>                   
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+            <p style="font-size:14px; text-align: center;">
+                <p:graphicImage value="/images/loading.gif" />
+                <p style="font-size:14px;">
+                    Loading...
+                </p>                
+            </p>
+        </p:dialog>
+        <p:graphicImage  value="/images/loading.gif" style="position: fixed;display:block;bottom:10px;right: 10px;height:100px; display: none;" id="loadingGIF"/>
+        <p:dialog header="Carga de archivo" widgetVar="frmExcel" modal="true" draggable="true" closable="true" resizable="true" showHeader="true">
+            <ui:include src="frmEstadoExcel.xhtml" />
+        </p:dialog>
+        <p:dialog header="Carga de Grafica Swf" widgetVar="frmEstadoGraficaSwf" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+            <ui:include src="frmEstadoGraficaSwf.xhtml" />
+        </p:dialog>                
+        <p:dialog header="Carga de Grafica Lineas" widgetVar="frmEstadoGraficaLineas" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+            <ui:include src="frmEstadoGraficaLineas.xhtml" />
+        </p:dialog>                        
+    </h:body>
+</html>

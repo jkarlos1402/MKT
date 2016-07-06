@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Catalogo de Segmento</title>    
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../../js/util.js"/>        
+    </h:head>
+    <h:body>
+        <ui:composition>
+            <h1>Catalogos de Segmentos</h1>
+            <h:form id="formSegmento" >
+                <p:growl id="msgsCatSegmento" showDetail="true"/>
+                <p:messages showDetail="true" closable="true"/>
+                <p:panel header="Cat&aacute;logo de Segmentos" id="panelSegmento">                                                    
+                    <h:panelGrid columns="1">
+                        <p:dataTable id="tableSegmento" var="segmento" value="#{mktCobhDimSegmentoBean.segmentoes}" rowKey="#{segmento.pkSegmento}" selection="#{mktCobhDimSegmentoBean.segmentoSeleccionado}" selectionMode="single" paginator="true" paginatorPosition="bottom" rows="20" widgetVar="vtableSegmento" >
+                            <f:facet name="header">
+                                <p:outputPanel>
+                                    <h:outputText value="Filtro Rapido:" />
+                                    <p:inputText id="globalFilterSegmento" onkeyup="PF('vtableSegmento').filter()" style="width:200px" placeholder="buscar....."/>
+                                    <h:commandLink>
+                                        <p:graphicImage url="/images/excel.png" />
+                                        <p:dataExporter type="xls" encoding="ISO-8859-1" target="tableSegmento" fileName="Segmentoes" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage url="/images/pdf.png" />
+                                        <p:dataExporter type="pdf" encoding="ISO-8859-1" target="tableSegmento" fileName="Segmentoes" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage  url="/images/csv.png" />
+                                        <p:dataExporter encoding="ISO-8859-1" type="csv" target="tableSegmento" fileName="Segmentoes" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage url="/images/xml.png" />
+                                        <p:dataExporter type="xml" encoding="ISO-8859-1" target="tableSegmento" fileName="Segmentoes" />
+                                    </h:commandLink>                                                        
+
+                                    <p:graphicImage url="/images/importarexcel.png" onclick="PF('frmExcelSegmento').show();" style="cursor: pointer;"/>
+                                    <p:graphicImage url="/images/grafica.png" onclick="PF('frmSegmentoGraficaSwf').show();" style="cursor: pointer;" />                                                               
+                                    <p:graphicImage url="/images/grafica.png" onclick="PF('frmSegmentoGraficaLineas').show();" style="cursor: pointer;" />                                                               
+
+                                    <p:commandLink  update=":formSegmento:panelSegmento,:formDialogSegmento:panelDialogSegmento" actionListener="#{mktCobhDimSegmentoBean.refreshSegmentoes}" >
+                                        <p:graphicImage url="/images/refrescar.png" style="cursor: pointer;"/>
+                                    </p:commandLink>
+                                </p:outputPanel>
+                            </f:facet>
+
+                            <p:column headerText="Num.Segmento" filterBy="#{segmento.pkSegmento}" sortBy="#{segmento.pkSegmento}" >
+                                <h:outputText value="#{segmento.pkSegmento}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Clave" filterBy="#{segmento.gvSegmento}" filterMatchMode="contains" sortBy="#{segmento.pkSegmento}">
+                                <h:outputText value="#{segmento.gvSegmento}"/>
+                            </p:column>
+                            <p:column headerText="Nombre Segmento" filterBy="#{segmento.segmento}" sortBy="#{segmento.pksegmento}" filterMatchMode="contains">
+                                <h:outputText value="#{segmento.segmento}"/>
+                            </p:column>   
+
+                            <f:facet name="footer">
+                                Total de registros #{mktCobhDimSegmentoBean.segmentoes.size()}
+                                Suma Total: #{mktCobhDimSegmentoBean.sumaSegmento()}
+                            </f:facet>                        
+                            <p:ajax event="rowSelect" update=":formSegmento:panelSegmento,:formDialogSegmento:panelDialogSegmento" listener="#{mktCobhDimSegmentoBean.selectSegmento}" onsuccess="PF('dialogDetalleSegmento').show();"/>
+                        </p:dataTable>
+                        <h3>Exportar</h3>
+                    </h:panelGrid>
+                    <f:facet name="footer">
+                        <p:commandButton value="Nuevo" update=":formSegmento:panelSegmento,:formDialogSegmento:panelDialogSegmento" actionListener="#{mktCobhDimSegmentoBean.nuevoSegmento}" oncomplete="PF('dialogDetalleSegmento').show();"/>
+                        <p:commandButton value="Importar Excel" onclick="PF('frmExcelSegmento').show()"/>
+                        <p:commandButton value="Refrescar" update=":formSegmento:panelSegmento,:formDialogSegmento:panelDialogSegmento" actionListener="#{mktCobhDimSegmentoBean.refreshSegmentoes}"/>
+                        <p:commandButton value="Exportar Excel" update="formSegmento"/>                          
+                    </f:facet>
+                </p:panel>
+            </h:form>              
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+            <p:dialog header="DETALLE DE SEGMENTOS" widgetVar="dialogDetalleSegmento" appendTo="@(body)" minHeight="40" modal="true" id="dialogDetalleSegmento">
+                <h:form id="formDialogSegmento">
+                    <p:growl id="msgsDialogSegmento" showDetail="true"/>
+                    <p:panel>
+                        <h:panelGrid columns="4" cellpadding="5px" id="panelDialogSegmento">
+                            <p:outputLabel for="gvSegmento" value="Clave Segmento:" />
+                            <p:inputText id="gvSegmento" maxlength="20" value="#{mktCobhDimSegmentoBean.segmentoNuevo.gvSegmento}"/>
+                            <p:outputLabel for="segmento" value="Nombre Segmento:" />
+                            <p:inputText id="segmento" required="true" maxlength="50" value="#{mktCobhDimSegmentoBean.segmentoNuevo.segmento}"/>                                                   
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2" cellspacing="10px">
+                                    <p:commandButton value="Guardar" update=":formSegmento:tableSegmento,:formDialogSegmento" actionListener="#{mktCobhDimSegmentoBean.saveSegmento}" onsuccess="PF('dialogDetalleSegmento').hide();">
+                                        <p:confirm message="Esta seguro?" header="Guardar"/>
+                                    </p:commandButton>
+                                    <p:commandButton value="Eliminar" update=":formSegmento:tableSegmento,:formDialogSegmento" actionListener="#{mktCobhDimSegmentoBean.eliminarSegmento}" onsuccess="PF('dialogDetalleSegmento').hide();">
+                                        <p:confirm message="Esta seguro?" header="Eliminar"/>
+                                    </p:commandButton>
+                                </h:panelGrid>
+                            </f:facet>
+                        </h:panelGrid>                
+                    </p:panel>
+                </h:form>
+            </p:dialog>                       
+            <p:dialog header="Carga de archivo" widgetVar="frmExcelSegmento" modal="true" appendTo="@(body)" draggable="true" closable="true" resizable="true" showHeader="true">
+                <ui:include src="frmSegmentoExcel.xhtml" />
+                <p:ajax event="close" update=":formSegmento" listener="#{mktCobhDimSegmentoBean.refreshSegmentoes()}"/>
+            </p:dialog>
+            <p:dialog header="Carga de Grafica Swf" widgetVar="frmSegmentoGraficaSwf" modal="true" appendTo="@(body)" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+<!--                <ui:include src="frmSegmentoGraficaSwf.xhtml" />-->
+            </p:dialog>                
+            <p:dialog header="Carga de Grafica Lineas" widgetVar="frmSegmentoGraficaLineas" modal="true" appendTo="@(body)" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+<!--                <ui:include src="frmSegmentoGraficaLineas.xhtml" />-->
+            </p:dialog>
+        </ui:composition>
+    </h:body>
+</html>

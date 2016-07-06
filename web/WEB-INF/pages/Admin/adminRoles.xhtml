@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>        
+        <ui:composition>            
+            <p:panel id="panelRoles" header="Cat&aacute;logo de roles">
+                <h:form id="formRoles">
+                    <p:growl id="msgsCatRoles" showDetail="true"/>
+                    <p:messages showDetail="true" closable="true"/>
+                    <h:panelGrid columns="1" cellpadding="5px"> 
+                        <h:panelGrid columns="6" cellpadding="5px">
+                            <p:outputLabel for="nombreRol" value="Nombre:" />
+                            <p:inputText id="nombreRol" required="true"  maxlength="1000" value="#{rolBean.rolNuevo.rol}"/>
+
+                            <p:outputLabel for="rolProyecto" value="Proyecto:" />
+                            <p:selectOneMenu id="rolProyecto" immediate="true" value="#{rolBean.rolNuevo.idProyecto}" style="width:125px" converter="genericConverter" required="true" label="Proyecto">
+                                <f:selectItem itemLabel="Seleccione" itemValue="" />
+                                <f:selectItems value="#{rolBean.catProyectos}" />                             
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <p:outputLabel value="Accesos:" />
+                        <p:tree value="#{rolBean.rootMenu}" var="itemMenu"
+                                selectionMode="checkbox"
+                                selection="#{rolBean.selectedNodesMenu}">
+                            <p:treeNode icon="ui-icon-radio-off">
+                                <h:outputText value="#{itemMenu.nombre}"/>
+                            </p:treeNode>                            
+                        </p:tree>
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2" cellspacing="10px">
+                                <p:commandButton value="Guardar" update=":formRoles,:formTableRoles" actionListener="#{rolBean.saveRol}">
+                                    <p:confirm message="&iquest;Est&aacute; seguro?" header="Guardar rol"/>
+                                </p:commandButton>
+                                <p:commandButton value="Eliminar" update=":formRoles,:formTableRoles" actionListener="#{rolBean.deleteRol}" rendered="#{rolBean.rolNuevo.pkRol ne null ? true : false}">
+                                    <p:confirm message="&iquest;Est&aacute; seguro?" header="Eliminar rol"/>
+                                </p:commandButton>
+                                <p:commandButton value="Nuevo" update=":formRoles,:formTableRoles" actionListener="#{rolBean.newRol}" rendered="#{rolBean.rolNuevo.pkRol ne null ? true : false}"/>                                
+                            </h:panelGrid>
+                        </f:facet>
+                    </h:panelGrid>
+                    <p:separator/>
+                </h:form>
+                <h:form id="formTableRoles">
+                    <h:panelGrid columns="1">
+                        <p:dataTable id="tableRoles" var="rolTable" value="#{rolBean.catRoles}" rowKey="#{rolTable.pkRol}" selection="#{rolBean.rolSelected}" selectionMode="single" paginator="true" rows="10">
+                            <p:column headerText="Nombre">
+                                <h:outputText value="#{rolTable.rol}"/>
+                            </p:column>
+                            <p:column headerText="Proyecto">
+                                <h:outputText value="#{rolTable.idProyecto.descripcionProyecto}"/>
+                            </p:column>                            
+                            <p:ajax event="rowSelect" update=":formRoles" listener="#{rolBean.selectRol}"/>
+                        </p:dataTable>
+                        <f:facet name="footer">
+                            <p:commandButton value="Actualizar" update=":formTableRoles:tableRoles" actionListener="#{rolBean.refreshRoles}"/>
+                        </f:facet>
+                    </h:panelGrid>
+                </h:form>
+            </p:panel>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+        </ui:composition>
+    </h:body>
+</html>
+

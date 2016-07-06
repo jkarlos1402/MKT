@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Load Information</title>    
+
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../js/util.js"/>
+    </h:head>                 
+    <h:body>    
+        <ui:composition>
+            <h:form id="formLoadPromCargaID">
+                <p:panel id="panelLoadPromCargaID" header="Promociones y Samplings ID - Carga de archivos .csv">  
+                    <p:growl id="messagesLoadPromCargaID" showDetail="true"/>
+                    <h:panelGrid columns="1" cellspacing="5px" style="width: 100%;">
+                        <p:messages showDetail="true" closable="true"/>
+                        <p:panel>                           
+                            <h:panelGrid columns="2" columnClasses="column50 topElemsClass,column50 topElemsClass">
+                                <p:fileUpload fileUploadListener="#{mktPromocionesLoadBean.handleFileUploadMktDatosPromID}" multiple="true"  mode="advanced" dragDropSupport="true" 
+                                              update="messagesLoadPromCargaID,panelLoadPromCargaID" sizeLimit="1000000000000" fileLimit="10" allowTypes="/(\.|\/)(csv|CSV)$/" 
+                                              onstart="handleResponse(1)" oncomplete="handleResponse(2)" cancelLabel="Cancelar" uploadLabel="Subir" label="Elegir"
+                                              value="#{mktPromocionesLoadBean.uploadedFile}" invalidFileMessage="Se requiere un archivo de tipo csv."
+                                              fileLimitMessage="Se ha sobre pasado el m&aacute;ximo de archivos permitidos (20)"
+                                              rendered="#{mktPromocionesLoadBean.bndMuestraChoose}"/>                                
+                                <h:panelGrid columns="2" columnClasses="column50 topElemsClass,column50 topElemsClass">                                    
+                                    <p:dataList value="#{mktPromocionesLoadBean.logsCarga}" var="cargaEnc" rows="1" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros" rendered="#{mktPromocionesLoadBean.logsCarga ne null and mktPromocionesLoadBean.logsCarga.get(0) ne null ? true : false}">
+                                        <f:facet name="header" rendered="#{cargaEnc.inicio ne null ? true : false}">                                             
+                                            #{mktPromocionesLoadBean.logsCarga.get(0).pkIdregistro}. Fecha de Ejecuci&oacute;n: #{mktPromocionesLoadBean.formatFecha.format(mktPromocionesLoadBean.logsCarga.get(0).inicio)} Hora: #{mktPromocionesLoadBean.formatHora.format(mktPromocionesLoadBean.logsCarga.get(0).inicio)}
+                                        </f:facet>
+                                        <h:panelGrid columns="2" columnClasses="label,value">
+                                            <h:outputText value="Proyecto:" />
+                                            <h:outputText value="#{cargaEnc.fkProyecto ne null ? cargaEnc.fkProyecto.nombreProyecto : ''}" />
+
+                                            <h:outputText value="Proceso:" />
+                                            <h:outputText value="#{cargaEnc.nombreProceso}" />
+
+                                            <h:outputText value="Datos procesados:" />
+                                            <h:outputText value="#{cargaEnc.totalprocesados}">
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Registros:" />
+                                            <h:outputText value="#{cargaEnc.totalregistros}" >
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Errores:" />
+                                            <h:outputText value="#{cargaEnc.totalerror}" >
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Archivos:" />
+                                            <h:outputText value="#{cargaEnc.totalarchivos ne null ? cargaEnc.totalarchivos : 0}" />
+
+                                            <h:outputText value="Estatus:" />
+                                            <h:outputText value="#{cargaEnc.fkIdstatus ne null ? cargaEnc.fkIdstatus.descripcion : ''}" />
+
+                                        </h:panelGrid>
+                                    </p:dataList>  
+                                    <p:dataList value="#{mktPromocionesLoadBean.logsCarga.get(0).mktCobhLogDetList}" var="cargaDet" rows="1" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros" rendered="#{mktPromocionesLoadBean.logsCarga.get(0).mktCobhLogDetList ne null and mktPromocionesLoadBean.logsCarga.get(0).mktCobhLogDetList.size() > 0 ? true : false}">
+                                        <f:facet name="header">                                             
+                                            Detalle del proceso
+                                        </f:facet>
+                                        <h:panelGrid columns="2" style="width:100%" columnClasses="label column40,value column60">                                            
+                                            <h:outputText value="Id:" />
+                                            <h:outputText value="#{cargaDet.pkIdregistrodet}" />
+
+                                            <h:outputText value="Nombre del archivo origen:" />
+                                            <h:outputText value="#{cargaDet.nomarchivoOrigen.length() > 30 ? cargaDet.nomarchivoOrigen.substring(cargaDet.nomarchivoOrigen.length() - 30, cargaDet.nomarchivoOrigen.length()) : cargaDet.nomarchivoOrigen}" />
+
+                                            <h:outputText value="Nombre del archivo de respaldo:" />
+                                            <h:outputText value="#{cargaDet.nomarchivoBak}" />
+
+                                            <h:outputText value="Fecha :" />
+                                            <h:outputText value="#{mktPromocionesLoadBean.formatFecha.format(cargaDet.inicio)}" />
+
+                                            <h:outputText value="Hora inicio/fin:" />
+                                            <h:outputText value="#{mktPromocionesLoadBean.formatHora.format(cargaDet.inicio)} / #{mktPromocionesLoadBean.formatHora.format(cargaDet.final1)} (#{cargaDet.tiempo} seg.)" />
+
+                                            <h:outputText value="Total de registros:" />
+                                            <h:outputText value="#{cargaDet.totalregistros}">
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Estatus:" />
+                                            <h:outputText value="#{cargaDet.fkIdstatus ne null ? cargaDet.fkIdstatus.descripcion : ''}" />
+
+                                            <h:outputText/>                                            
+                                        </h:panelGrid>
+                                    </p:dataList>                                    
+                                </h:panelGrid>
+                            </h:panelGrid>                            
+                        </p:panel>                        
+                        <p:separator />                                                
+                        <p:fieldset legend="Resumen" style="margin-bottom:20px">                                                        
+                            <h:panelGrid columns="3">
+                                <h:outputText value="No se encontraron registros." rendered="#{mktPromocionesLoadBean.numRegistros == 0 ? true : false}"/>
+                                <h:outputText value="Registros encontrados: " rendered="#{mktPromocionesLoadBean.numRegistros > 0 ? true : false}"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.numRegistros}" rendered="#{mktPromocionesLoadBean.numRegistros > 0 ? true : false}">
+                                    <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                </h:outputText>
+                                <h:panelGrid columns="3" cellspacing="5">
+                                    <p:commandButton action="#{mktPromocionesLoadBean.ejecutaScript(7)}" value="Proceso Automatizado" update=":formLoadPromCargaID">
+                                        <p:confirm header="Ejectuar proceso automatizado" message="&iquest;Est&aacute; seguro?"/>
+                                    </p:commandButton>
+                                    <p:commandButton  value="Estatus del proceso" action="#{mktPromocionesLoadBean.getDetalleUltimaCarga()}" update=":formLoadPromCargaID,:formLoadPromCargaID:dialogDetalleCarga" oncomplete="PF('dialogDetalleCarga').show()"/>
+                                    <p:button value="Reporte Resumen de Cargas" href="http://kofmxqrboapq1:8080/BOE/OpenDocument/opendoc/openDocument.jsp?sIDType=CUID&amp;iDocID=AQidG0Cz971NvH6aAsxWa_o" target="_blank"/>
+                                </h:panelGrid>  
+                            </h:panelGrid>                            
+                            <h:panelGrid columns="3" cellspacing="5px" style="width: 100%;" columnClasses="topElemsClass,topElemsClass,topElemsClass">                                
+                                <p:dataList value="#{mktPromocionesLoadBean.errors}" var="errorSheet" rows="2" type="ordered" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros">
+                                    <f:facet name="header">
+                                        Errores
+                                    </f:facet>
+                                    #{errorSheet}
+                                </p:dataList>
+                            </h:panelGrid>
+                        </p:fieldset>                        
+                        <f:facet name="footer">
+                            <p:commandButton value="Guardar" actionListener="#{mktPromocionesLoadBean.saveInfoDatosPromID}" update=":formLoadPromCargaID" rendered="#{mktPromocionesLoadBean.numRegistros > 0 ? true : false}">
+                                <p:confirm message="&iquest;Est&aacute; Seguro de guardar?" header="Cargar Registros a Base"/>
+                            </p:commandButton>                        
+                        </f:facet>
+                    </h:panelGrid>                
+                </p:panel>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>   
+                <p:dialog modal="true" header="Estatus del proceso" closeOnEscape="true" id="dialogDetalleCarga" widgetVar="dialogDetalleCarga" minHeight="40" width="50%" appendTo="@(body)" resizable="false" style="overflow: auto;">
+                    <p:panel style="width: 100%; max-height: 100%"> 
+                        <h:panelGrid columns="1"  style="width: 100%;">
+                            <h:outputText value="En esta sección se muestra el detalle del &uacute;ltimo proceso ejecutado para el apartado de Lanzamientos"/>
+                            <p:separator/>
+                            <h:panelGrid columns="2" columnClasses="column50 label,column50 value" style="width: 100%;">
+                                <h:outputText value="Proyecto:"/>
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[2]}"/>
+                                <h:outputText value="Registro:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[0]}"/>
+                                <h:outputText value="Proceso:"/>                                 
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[1]}"/>                                
+                                <h:outputText value="Tipo Proceso:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[4]}"/>                                
+                                <h:outputText value="Registros total: "/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[8]}"/>                                
+                                <h:outputText value="Registros Procesados:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[8]}"/>                                
+                                <h:outputText value="Registros Error:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[11]}"/>                                
+                                <h:outputText value="Registros St:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[13]}"/>                                
+                                <h:outputText value="Estatus:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[3]}"/>                                
+                                <h:outputText value="Fecha Ejecución:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[5]}"/>                                
+                                <h:outputText value="Inicio:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[6]}"/>                                
+                                <h:outputText value="Fin:"/>                                
+                                <h:outputText value="#{mktPromocionesLoadBean.detalleUltimaEjecucion[7]}"/>                                
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:dialog>  
+            </h:form> 
+        </ui:composition>                   
+    </h:body>
+</html>
+

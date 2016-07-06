@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Load Information</title>    
+
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../js/util.js"/>
+    </h:head>                 
+    <h:body>    
+        <ui:composition>
+            <h:form id="formLoadMktDatosArchivo">
+                <p:panel id="panelLoadMktDatos" header="Carga de archivos .xlsx din&aacute;mico">  
+                    <p:growl id="messagesLoadMktDatos" showDetail="true"/>
+                    <h:panelGrid columns="1" cellspacing="5px" style="width: 100%;">
+                        <p:messages showDetail="true" closable="true"/>
+                        <p:panel>                           
+                            <h:panelGrid columns="2" columnClasses="column50 topElemsClass,column50 topElemsClass">
+                                <p:fileUpload fileUploadListener="#{mktLoadBeanDinamico.handleFileUploadMktDatos}" multiple="true"  mode="advanced" dragDropSupport="true" 
+                                              update="messagesLoadMktDatos,panelLoadMktDatos" sizeLimit="100000000" fileLimit="20" allowTypes="/(\.|\/)(xlsx|XLSX)$/" 
+                                              onstart="handleResponse(1)" oncomplete="handleResponse(2)" cancelLabel="Cancelar" uploadLabel="Subir" label="Elegir"
+                                              value="#{mktLoadBeanDinamico.uploadedFile}" invalidFileMessage="Se requiere un archivo de tipo xlsx file."
+                                              fileLimitMessage="Se ha sobre pasado el m&aacute;ximo de archivos permitidos (20)"
+                                              rendered="#{mktLoadBeanDinamico.bndMuestraChoose}"/>                                
+                                <h:panelGrid columns="2" columnClasses="column50 topElemsClass,column50 topElemsClass">                                    
+                                    <p:dataList value="#{mktLoadBeanDinamico.logsCarga}" var="cargaEnc" rows="1" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros" rendered="#{mktLoadBeanDinamico.logsCarga ne null and mktLoadBeanDinamico.logsCarga.get(0) ne null ? true : false}">
+                                        <f:facet name="header" rendered="#{cargaEnc.inicio ne null ? true : false}">                                             
+                                            #{mktLoadBeanDinamico.logsCarga.get(0).pkIdregistro}. Fecha de Ejecuci&oacute;n: #{mktLoadBeanDinamico.formatFecha.format(mktLoadBeanDinamico.logsCarga.get(0).inicio)} Hora: #{mktLoadBeanDinamico.formatHora.format(mktLoadBeanDinamico.logsCarga.get(0).inicio)}
+                                        </f:facet>
+                                        <h:panelGrid columns="2" columnClasses="label,value">
+                                            <h:outputText value="Proyecto:" />
+                                            <h:outputText value="#{cargaEnc.fkProyecto ne null ? cargaEnc.fkProyecto.nombreProyecto : ''}" />
+
+                                            <h:outputText value="Proceso:" />
+                                            <h:outputText value="#{cargaEnc.nombreProceso}" />
+
+                                            <h:outputText value="Datos procesados:" />
+                                            <h:outputText value="#{cargaEnc.totalprocesados}">
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Registros:" />
+                                            <h:outputText value="#{cargaEnc.totalregistros}" >
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Errores:" />
+                                            <h:outputText value="#{cargaEnc.totalerror}" >
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Archivos:" />
+                                            <h:outputText value="#{cargaEnc.totalarchivos ne null ? cargaEnc.totalarchivos : 0}" />
+
+                                            <h:outputText value="Estatus:" />
+                                            <h:outputText value="#{cargaEnc.fkIdstatus ne null ? cargaEnc.fkIdstatus.descripcion : ''}" />
+
+                                            <p:commandButton value="Ver m&aacute;s detalles" action="#{mktLoadBeanDinamico.getDetalleCarga(cargaEnc.pkIdregistro, 0)}" oncomplete="PF('dialogDetalleCarga').show();" update=":formLoadMktDatosArchivo:dialogDetalleCarga" rendered="#{mktLoadBeanDinamico.proUniverso}"/>
+                                        </h:panelGrid>
+                                    </p:dataList>  
+                                    <p:dataList value="#{mktLoadBeanDinamico.logsCarga.get(0).mktCobhLogDetList}" var="cargaDet" rows="1" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros" rendered="#{mktLoadBeanDinamico.logsCarga.get(0).mktCobhLogDetList ne null and mktLoadBeanDinamico.logsCarga.get(0).mktCobhLogDetList.size() > 0 ? true : false}">
+                                        <f:facet name="header">                                             
+                                            Detalle del proceso
+                                        </f:facet>
+                                        <h:panelGrid columns="2" style="width:100%" columnClasses="label column40,value column60">                                            
+                                            <h:outputText value="Id:" />
+                                            <h:outputText value="#{cargaDet.pkIdregistrodet}" />
+
+                                            <h:outputText value="Nombre del archivo origen:" />
+                                            <h:outputText value="#{cargaDet.nomarchivoOrigen.length() > 30 ? cargaDet.nomarchivoOrigen.substring(cargaDet.nomarchivoOrigen.length() - 30, cargaDet.nomarchivoOrigen.length()) : cargaDet.nomarchivoOrigen}" />
+
+                                            <h:outputText value="Nombre del archivo de respaldo:" />
+                                            <h:outputText value="#{cargaDet.nomarchivoBak}" />
+
+                                            <h:outputText value="Fecha :" />
+                                            <h:outputText value="#{mktLoadBeanDinamico.formatFecha.format(cargaDet.inicio)}" />
+
+                                            <h:outputText value="Hora inicio/fin:" />
+                                            <h:outputText value="#{mktLoadBeanDinamico.formatHora.format(cargaDet.inicio)} / #{mktLoadBeanDinamico.formatHora.format(cargaDet.final1)} (#{cargaDet.tiempo} seg.)" />
+
+                                            <h:outputText value="Total de registros:" />
+                                            <h:outputText value="#{cargaDet.totalregistros}">
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Estatus:" />
+                                            <h:outputText value="#{cargaDet.fkIdstatus ne null ? cargaDet.fkIdstatus.descripcion : ''}" />
+
+                                            <h:outputText/>
+                                            <p:commandButton value="Ver m&aacute;s detalles" action="#{mktLoadBeanDinamico.getDetalleCarga(-1, cargaDet.pkIdregistrodet)}" oncomplete="PF('dialogDetalleCarga').show();" update=":formLoadMktDatosArchivo:dialogDetalleCarga" rendered="#{mktLoadBeanDinamico.proUniverso}"/>
+                                        </h:panelGrid>
+                                    </p:dataList>                                    
+                                </h:panelGrid>
+                            </h:panelGrid>                            
+                        </p:panel>                        
+                        <p:separator />                                                
+                        <p:fieldset legend="Summary" style="margin-bottom:20px">
+                            <p:commandLink value="Ayuda PDF" onclick="PF('dialogAyudaCarga').show();" style="color: #555;">                                
+                            </p:commandLink>
+                            <h:panelGrid columns="3">
+                                <h:outputText value="No se encontraron registros." rendered="#{mktLoadBeanDinamico.numRegistros == 0 ? true : false}"/>
+                                <h:outputText value="Registros encontrados: " rendered="#{mktLoadBeanDinamico.numRegistros > 0 ? true : false}"/>                                
+                                <h:outputText value="#{mktLoadBeanDinamico.numRegistros}" rendered="#{mktLoadBeanDinamico.numRegistros > 0 ? true : false}">
+                                    <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                </h:outputText>  
+                                <h:panelGrid columns="3">
+                                    <p:commandButton value="Actualiza universo" actionListener="#{mktLoadBeanDinamico.ejecutaScript(1)}" update=":formLoadMktDatosArchivo" rendered="#{mktLoadBeanDinamico.proUniverso}">
+                                        <p:confirm message="&iquest;Est&aacute; Seguro?" header="Ejecutar Script"/>
+                                    </p:commandButton>
+                                </h:panelGrid>
+                            </h:panelGrid>                            
+                            <h:panelGrid columns="3" cellspacing="5px" style="width: 100%;" columnClasses="topElemsClass,topElemsClass,topElemsClass">
+                                <p:dataList value="#{mktLoadBeanDinamico.omittedSheets}" var="omittedSheet" rows="2" type="ordered" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros">
+                                    <f:facet name="header">
+                                        Hojas Omitidas
+                                    </f:facet>
+                                    #{omittedSheet}
+                                </p:dataList>
+                                <p:dataList value="#{mktLoadBeanDinamico.loadedSheets}" var="loadedSheet" rows="2" type="ordered" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros">
+                                    <f:facet name="header">
+                                        Hojas Cargadas
+                                    </f:facet>
+                                    <h:outputText value="#{loadedSheet}"/>
+                                </p:dataList>
+                                <p:dataList value="#{mktLoadBeanDinamico.errors}" var="errorSheet" rows="2" type="ordered" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros">
+                                    <f:facet name="header">
+                                        Errores
+                                    </f:facet>
+                                    #{errorSheet}
+                                </p:dataList>
+                            </h:panelGrid>
+                        </p:fieldset>                        
+                        <f:facet name="footer">
+                            <p:commandButton value="Save" actionListener="#{mktLoadBeanDinamico.saveInfoDatos}" update=":formLoadMktDatosArchivo" rendered="#{mktLoadBeanDinamico.numRegistros > 0 ? true : false}">
+                                <p:confirm message="&iquest;Est&aacute; Seguro de guardar?" header="Cargar Registros a Base"/>
+                            </p:commandButton>                        
+                        </f:facet>
+                    </h:panelGrid>                
+                </p:panel>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>   
+                <p:dialog modal="true" header="Desglose de registros procesados por estado" closeOnEscape="true" id="dialogDetalleCarga" widgetVar="dialogDetalleCarga" minHeight="40" width="50%" appendTo="@(body)" resizable="false" style="overflow: auto;">
+                    <p:panel style="width: 100%; max-height: 100%">    
+                        <p:dataTable value="#{mktLoadBeanDinamico.detalleCarga}" var="detalle" rows="5" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false">
+                            <p:column headerText="Clave" filterBy="#{detalle.claveEstado}" sortBy="#{detalle.claveEstado}">
+                                <h:outputText value="#{detalle.claveEstado}"/>
+                            </p:column>
+                            <p:column headerText="Estado" filterBy="#{detalle.estado}" sortBy="#{detalle.estado}">
+                                <h:outputText value="#{detalle.estado}"/>
+                            </p:column>
+                            <p:column headerText="N&uacute;n. reg. cargados" sortBy="#{detalle.numRegistros}">
+                                <h:outputText value="#{detalle.numRegistros}">
+                                    <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </p:dialog>  
+            </h:form> 
+        </ui:composition>                   
+    </h:body>
+</html>
+

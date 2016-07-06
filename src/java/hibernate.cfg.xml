@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- PARA DESARROLLO -->
+        <!--        <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
+        <property name="hibernate.connection.url">jdbc:oracle:thin:@10.138.3.32:1527:DSE</property>
+        <property name="hibernate.connection.username">BOE14DEVHA</property>
+        <property name="hibernate.connection.password">temporal</property> -->
+    
+        <!-- PARA CALIDAD -->
+        
+<!--        <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
+        <property name="hibernate.connection.url">jdbc:oracle:thin:@10.138.3.239:1527:QSE</property>
+        <property name="hibernate.connection.username">BOE14QASHA</property>
+        <property name="hibernate.connection.password">B0EI4#QA5AH</property>-->
+    
+        <!-- PARA PRODUCTIVO -->
+        <!--         <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
+        <property name="hibernate.connection.url">jdbc:oracle:thin:@10.138.5.209:1527:DMP</property>
+        <property name="hibernate.connection.username">DMPPRD</property> 
+        <property name="hibernate.connection.password">pRD#Dm_P</property>-->
+        
+        <!-- PARA PRODUCTIVO 2-->
+            
+<!--        <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
+        <property name="hibernate.connection.url">jdbc:oracle:thin:@10.138.3.223:1527:BSE</property>
+        <property name="hibernate.connection.username">BOE14PRDHA</property> 
+        <property name="hibernate.connection.password">B0EI4PR#AH</property>-->
+
+
+        <!-- PARA BASE DE DATOS LOCAL 2-->
+            
+        <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
+        <property name="hibernate.connection.url">jdbc:oracle:thin:@localhost:1521:xe</property>
+        <property name="hibernate.connection.username">kofuser</property> 
+        <property name="hibernate.connection.password">kofuser</property> 
+        
+        <!-- PARA BASE DE DATOS LOCAL COS MKT-->
+                    
+        <!-- <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
+        <property name="hibernate.connection.url">jdbc:oracle:thin:@localhost:1521:xe</property>
+        <property name="hibernate.connection.username">mktuser</property> 
+        <property name="hibernate.connection.password">Guillermo8*</property> 
+        -->
+
+        <!-- Use the C3P0 connection pool. -->
+    
+        <property name="c3p0.min_size">3</property>
+        <property name="c3p0.max_size">15</property>
+        <property name="c3p0.timeout">1800</property>
+        <!-- Disable second-level cache. -->
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+        <property name="cache.use_query_cache">false</property>
+        <property name="cache.use_minimal_puts">false</property>
+        <property name="max_fetch_depth">3</property>
+        <property name="hibernate.jdbc.batch_size">100</property>
+        <!-- Print SQL to stdout. -->
+        <property name="show_sql">false</property>
+        <!--<property name="show_sql">false</property>-->
+        <property name="format_sql">false</property>
+        <property name="current_session_context_class">thread</property>    
+        <mapping class="com.femsa.mkt.pojos.MktCobStHisAgrupacion" />
+        <mapping class="com.femsa.mkt.pojos.MktCobStHisObjetivos" />    
+        <mapping class="com.femsa.mkt.pojos.MktCobhTmpHisDatos" />    
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimEstado" />    
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimRegion" />    
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimCanal" />        
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimEmpaque" />            
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimGec" />            
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimMarca" />            
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimSegmento" />                
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimUo" />                        
+        <mapping class="com.femsa.mkt.pojos.MktCobhStHisDatos" />   
+        <mapping class="com.femsa.mkt.pojos.MktAdmin_CatPais"/>
+        <mapping class="com.femsa.mkt.pojos.MktAdmin_CatRol"/>
+        <mapping class="com.femsa.mkt.pojos.MktAdmin_CatStatus"/>
+        <mapping class="com.femsa.mkt.pojos.MktAdmin_Usuario"/>
+        <mapping class="com.femsa.mkt.pojos.MktAdmin_CatProyecto"/>
+        <mapping class="com.femsa.mkt.pojos.MktAdmin_LoadLog"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCatMenu"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhTemp"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhScript"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhLogEnc"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhLogDet"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhLogStatus"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimTamanio"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimRetornable"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimCategoria"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimGrupoRm1"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimGrupoRm2"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimTipoconsumo"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimSegcalorico"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimCanalrm1"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimCanalkof"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimPlanvisita"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimTerritorio"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimRuta"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimSku"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimCliente"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimOcaconsumo"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimFamiliamarca"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimNivelmercadeo"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimSubcategoria"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimCategoriaestra"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimGrupocanal"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimGrupocategoria"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimAgrupador"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhRelarchivotabla"/>             
+        <mapping class="com.femsa.mkt.pojos.MktCobhDimSabor"/>                                 
+        <mapping class="com.femsa.mkt.pojos.MktTmpLzObjetivo"/>                                 
+        <mapping class="com.femsa.mkt.pojos.MktTmpLzFiltroIdCliente"/>                                 
+        <mapping class="com.femsa.mkt.pojos.MktTmpPsObjetivo"/>                                 
+        <mapping class="com.femsa.mkt.pojos.MktTmpPsFiltroId"/>                                 
+        <mapping class="com.femsa.mkt.pojos.MktTmpPsRutaCanal"/>                                 
+    </session-factory>
+</hibernate-configuration>

@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Corporate Information Portal</title>  
+            <link rel="shortcut icon" type="image/x-icon" href="images/logo-cocacola.jpg" />
+        </f:facet>             
+        <link rel="stylesheet" type="text/css" href="css/estilosGenerales.css"/>
+        <link rel="stylesheet" type="text/css" href="css/dropdown-menu.css"/>
+        <script type="text/javascript" src="js/util.js"/>
+        <script type="text/javascript" src="js/dropdown-menu.min.js"/>
+    </h:head>    
+    <h:body>        
+        <p:outputPanel id="panelMain">
+            <div class="ui-grid ui-grid-responsive">
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-3">                        
+
+                        <p:panel style="background-color: rgba(0, 0, 0, 0.3); border-style: none; text-align: center;   margin-left: -60px;" >
+                            <div class="ui-grid-row">
+                                <div class="ui-grid-col-8">
+                                    <p:graphicImage  value="images/femsa.png"/>
+                                </div>
+                            </div>
+                            <div class="ui-grid-row">
+                                <div class="ui-grid-col-12">
+                                    <h:form id="formUserLoged">
+                                        <h:panelGrid columns="1" cellspacing="3px" style="width: 100%;">
+                                            <h:panelGrid columns="2" cellspacing="0px" style="margin: auto;">
+                                                <h:outputText value="Bienvenido " style="color: #ffffff; font-size: 15px;"/>
+                                                <h:outputText value=" " style="color: #ffffff; font-size: 15px;"/>
+                                                <p:commandLink value="#{mainBean.usuario.nombre}" action="#" oncomplete="PF('dialogSetUser').show();" style="color: #ffffff; font-size: 15px;" title="Cambiar informaci&oacute;n"/>
+                                            </h:panelGrid>
+                                            <p:commandLink value="(Salir)"  action="#{mktLoginBean.logout}" style="color: #ffffff; font-size: 15px;"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2" columnClasses="label,value" width="100%">
+                                            <p:commandLink value="Ayuda PDF" onclick="PF('dialogAyuda').show();" style="color: #ffffff;"/>                                        
+                                        <p:commandLink value="/ Video" onclick="PF('dialogAyudaVideo').show();" style="color: #ffffff;"/>
+                                        </h:panelGrid>
+                                        
+                                        <p:overlayPanel for="formUserLoged" showEvent="mouseover" hideEvent="off" widgetVar="toolChangePass" styleClass="toolClass" rendered="#{mainBean.firstSession ? true : false}" >
+                                            <h:outputText value="&Eacute;sta es su primer visita, por favor cambie su contrase&ntilde;a "/>
+                                            <p:commandLink value="aqu&iacute;" action="#" onclick="PF('dialogSetPassUser').show();"/>
+                                        </p:overlayPanel>
+                                        <p:overlayPanel for="formUserLoged" showEvent="mouseover" hideEvent="off" showEffect="fade" hideEffect="fade" styleClass="toolClass" rendered="#{mainBean.usuario.passreset ? true : false}" >
+                                            <h:outputText value="Su contrase&ntilde;a ha sido restaurada, por favor c&aacute;mbiela "/>
+                                            <p:commandLink value="aqu&iacute;" action="#" onclick="PF('dialogSetPassUser').show();"/>
+                                        </p:overlayPanel>
+                                    </h:form>                                              
+                                </div>
+                            </div>
+
+                        </p:panel>                        
+                        <!-- MENU -->
+                        <p:panel style="background: inherit; margin-top: -8px; border-style: none;">
+                            <h:form>
+                                <div style="text-align: center; " id="menuPrincipalDinamico">
+                                    <ul  id="menuGeneralDinamico" class="dropdown-menu">
+                                        <c:forEach items="#{mainBean.menuAll}" var="menuItem">
+                                            <ui:include src="WEB-INF/pages/generadorMenu.xhtml">
+                                                <ui:param name="menuItem" value="#{menuItem}"/>
+                                            </ui:include>
+                                        </c:forEach>
+                                    </ul>
+                                </div>
+                            </h:form>
+                        </p:panel>                                                                                              
+                        <!-- MENU fin -->                        
+                    </div>
+                    <div class="ui-grid-col-9" >
+                        <p:outputPanel id="workSpace">
+                            <ui:include src="#{mainBean.page}" />
+                        </p:outputPanel>                        
+                    </div>
+                </div>
+            </div>
+        </p:outputPanel>                              
+        <p:dialog modal="true" header="User information" widgetVar="dialogSetUser" minHeight="40">
+            <ui:include src="WEB-INF/pages/Admin/informationUser.xhtml"/>
+        </p:dialog>
+        <p:dialog modal="true" header="" closeOnEscape="true" id="dialogSetVentana" widgetVar="dialogSetVentana" minHeight="40" width="95%" appendTo="@(body)" resizable="false" position="left top" style="overflow: auto;">
+            <p:panel id="divSetVentana" style="width: 100%; max-height: 100%">    
+                <ui:include src="#{mainBean.pageVentana}"/>
+            </p:panel>
+        </p:dialog>                      
+        <p:dialog modal="false" header="Ayuda" closeOnEscape="true" id="dialogAyuda" widgetVar="dialogAyuda" minHeight="40" width="95%" appendTo="@(body)" resizable="true" height="500" position="left top" style="overflow: auto;" minimizable="true" maximizable="true">
+            <!--<p:panel style="width: 100%; height: 490px;">-->    
+            <!--                <ui:include src=""/>-->
+            <p:media value="/Ayuda/pdf/MOCH1.pdf" player="pdf" height="100%" width="100%"/>               
+            <!--</p:panel>-->
+        </p:dialog>        
+        <p:dialog modal="false" header="Ayuda" closeOnEscape="true" id="dialogAyudaCarga" widgetVar="dialogAyudaCarga" minHeight="40" width="95%" appendTo="@(body)" resizable="true" height="500" position="left top" style="overflow: auto;" minimizable="true" maximizable="true">
+            <!--<p:panel style="width: 100%; height: 490px;">-->    
+            <!--                <ui:include src=""/>-->
+            <p:media value="/Ayuda/pdf/MOCH2.pdf" player="pdf" height="100%" width="100%"/>               
+            <!--</p:panel>-->
+        </p:dialog>        
+        <p:dialog modal="false" header="Ayuda" closeOnEscape="true" id="dialogAyudaVideo" widgetVar="dialogAyudaVideo" minHeight="40" width="95%" appendTo="@(body)" resizable="true" height="500" position="left top" style="overflow: auto;" minimizable="true" maximizable="true">
+            <p:media value="/Ayuda/ManualInteractivo_CoboerturasHistoricas.mp4" player="quicktime" height="100%" width="100%">                
+                <f:param name="autostart" value="false"/>
+                <f:param name="autoplay" value="false"/>
+            </p:media>               
+        </p:dialog>        
+        <p:dialog modal="true" header="Change password" widgetVar="dialogSetPassUser" minHeight="40">
+            <h:form id="formPassUser">
+                <p:messages id="messages" showDetail="true" autoUpdate="true" />
+
+                <h:panelGrid columns="2" id="matchGrid" cellpadding="5">                                       
+                    <h:outputLabel for="pwd1" value="New Password: " />
+                    <p:password id="pwd1" value="#{mainBean.password}" match="pwd2" label="New Password" required="true" feedback="true" />
+
+                    <h:outputLabel for="pwd2" value="Confirm Password: " />
+                    <p:password id="pwd2" label="Confirm Password" required="true" />
+
+                    <f:facet name="footer">
+                        <p:commandButton update="matchGrid,:formUserLoged" value="Guardar" actionListener="#{mainBean.changeUserPassword}"/>
+                    </f:facet>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" >
+            <p style="font-size:14px; text-align: center;">
+                <p:graphicImage value="/images/loading.gif" />
+                <p style="font-size:14px; text-align: center;">                         
+                    Loading...                    
+                </p>                
+            </p>
+        </p:dialog> 
+    </h:body>
+</html>
+

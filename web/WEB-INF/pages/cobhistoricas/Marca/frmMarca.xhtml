@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Catalogo de Marcas</title>    
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../../js/util.js"/>        
+    </h:head>
+    <h:body>
+        <ui:composition>
+        <h1>Catalogos de Marcas</h1>
+        <h:form id="formMarca" >
+            <p:growl id="msgsCatMarca" showDetail="true"/>
+            <p:messages showDetail="true" closable="true"/>
+            <p:panel header="Catalogo de Marca" id="panelMarca">                                                    
+                <h:panelGrid columns="1">
+                    <p:dataTable id="tableMarca" var="marca" value="#{mktCobhDimMarcaBean.marcaes}" rowKey="#{marca.pkMarca}" selection="#{mktCobhDimMarcaBean.marcaSeleccionado}" selectionMode="single" paginator="true" paginatorPosition="bottom" rows="20" widgetVar="vtableMarca" >
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Filtro Rapido:" />
+                                <p:inputText id="globalFilterMarca" onkeyup="PF('vtableMarca').filter()" style="width:200px" placeholder="buscar....."/>
+                                <h:commandLink>
+                                    <p:graphicImage url="/images/excel.png" />
+                                    <p:dataExporter type="xls" encoding="ISO-8859-1" target="tableMarca" fileName="Marcaes" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="/images/pdf.png" />
+                                    <p:dataExporter type="pdf" encoding="ISO-8859-1" target="tableMarca" fileName="Marcaes" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage  url="/images/csv.png" />
+                                    <p:dataExporter encoding="ISO-8859-1" type="csv" target="tableMarca" fileName="Marcaes" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="/images/xml.png" />
+                                    <p:dataExporter type="xml" encoding="ISO-8859-1" target="tableMarca" fileName="Marcaes" pageOnly="true" />
+                                </h:commandLink>                                                        
+
+                                <p:graphicImage url="/images/importarexcel.png" onclick="PF('frmExcelMarca').show();" style="cursor: pointer;"/>
+                                <p:graphicImage url="/images/grafica.png" onclick="PF('frmMarcaGraficaSwf').show();" style="cursor: pointer;" />                                                               
+                                <p:graphicImage url="/images/grafica.png" onclick="PF('frmMarcaGraficaLineas').show();" style="cursor: pointer;" />                                                               
+                                
+                                <p:commandLink  update=":formMarca:panelMarca,:formDialogMarca:panelDialogMarca" actionListener="#{mktCobhDimMarcaBean.refreshMarcaes}" >
+                                    <p:graphicImage url="/images/refrescar.png" style="cursor: pointer;"/>
+                                </p:commandLink>
+
+
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column headerText="Num.Marca" filterBy="#{marca.pkMarca}" sortBy="#{marca.pkMarca}" >
+                            <h:outputText value="#{marca.pkMarca}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Clave" filterBy="#{marca.gvMarca}" filterMatchMode="contains" sortBy="#{marca.pkMarca}">
+                            <h:outputText value="#{marca.gvMarca}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Segmento" filterBy="#{marca.fkseSegmento}" filterMatchMode="contains" sortBy="#{marca.fkseSegmento}">
+                            <h:outputText value="#{marca.fkseSegmento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Nombre Marca" filterBy="#{marca.marca}" sortBy="#{marca.pkmarca}" filterMatchMode="contains">
+                            <h:outputText value="#{marca.marca}"/>
+                        </p:column>   
+
+                        <f:facet name="footer">
+                            Total de registros #{mktCobhDimMarcaBean.marcaes.size()}
+                            Suma Total: #{mktCobhDimMarcaBean.sumaMarca()}
+                        </f:facet>                        
+
+                        <p:ajax event="rowSelect" update=":formMarca:panelMarca,:formDialogMarca:panelDialogMarca" listener="#{mktCobhDimMarcaBean.selectMarca}" onsuccess="PF('dialogDetalleMarca').show();"/>
+
+                    </p:dataTable>
+                </h:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="Nuevo" update=":formMarca:panelMarca,:formDialogMarca:panelDialogMarca" actionListener="#{mktCobhDimMarcaBean.nuevoMarca}" oncomplete="PF('dialogDetalleMarca').show();"/>
+                    <p:commandButton value="Importar Excel" onclick="PF('frmExcelMarca').show()"/>
+                    <p:commandButton value="Refrescar" update=":formMarca:panelMarca,:formDialogMarca:panelDialogMarca" actionListener="#{mktCobhDimMarcaBean.refreshMarcaes}"/>
+                    <p:commandButton value="Exportar Excel" update="formMarca"/>                          
+                    
+                </f:facet>
+            </p:panel>
+        </h:form>              
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+        <p:dialog header="DETALLE DE MARCAS" widgetVar="dialogDetalleMarca" appendTo="@(body)" minHeight="40" modal="true" id="dialogDetalleMarca">
+            <h:form id="formDialogMarca">
+                <p:growl id="msgsDialogMarca" showDetail="true"/>
+                <p:panel>
+                    <h:panelGrid columns="5" cellpadding="5px" id="panelDialogMarca">
+                        <p:outputLabel for="idSegmento" value="Segmento:" />                       
+                        <p:selectOneMenu id="idSegmento" value="#{mktCobhDimMarcaBean.marcaNuevo.fkseSegmento}" converter="segmentoConverter" label="Segmento" immediate="true">
+                            <f:selectItem itemLabel="Seleccione" itemValue="" />
+                            <f:selectItems value="#{mktCobhDimMarcaBean.catSegmentos}"/> 
+                        </p:selectOneMenu>
+                        
+                        <p:commandLink value="..." onclick="PF('dialogoSegmento').show();">                                                        
+                        </p:commandLink>
+                        
+                        <p:outputLabel for="marca" value="Nombre Marca:" />
+                        <p:inputText id="marca" required="true" maxlength="50" value="#{mktCobhDimMarcaBean.marcaNuevo.marca}"/>                                                   
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2" cellspacing="10px">
+                                <p:commandButton value="Guardar" update=":formMarca:tableMarca,:formDialogMarca" actionListener="#{mktCobhDimMarcaBean.saveMarca}" onsuccess="PF('dialogDetalleMarca').hide();">
+                                    <p:confirm message="Esta seguro?" header="Guardar"/>
+                                </p:commandButton>
+                                <p:commandButton value="Eliminar" update="formMarca" actionListener="#{mktCobhDimMarcaBean.eliminarMarca}" rendered="#{mktCobhDimMarcaBean.marcaNuevo.pkMarca ne null ? true : false}" onsuccess="PF('dialogDetalleMarca').hide();">
+                                    <p:confirm message="Esta seguro?" header="Eliminar"/>
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </f:facet>
+                    </h:panelGrid>                
+                </p:panel>
+            </h:form>
+        </p:dialog>
+<!--        <p:ajaxStatus style="position: fixed;display:block;bottom:100px;right: 20px;height:24px;"  onstart="PF('statusDialogMarca').show()" onsuccess="PF('statusDialogMarca').hide()"/>                   
+        <p:dialog widgetVar="statusDialogMarca" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+            <p style="font-size:14px; text-align: center;">
+                <p:graphicImage value="/images/loading.gif" />
+                <p style="font-size:14px;">
+                    Loading...
+                </p>                
+            </p>
+        </p:dialog>-->
+<!--        <p:graphicImage  value="/images/loading.gif" style="position: fixed;display:block;bottom:10px;right: 10px;height:100px; display: none;" id="loadingGIF"/>-->
+        <p:dialog header="Carga de archivo" widgetVar="frmExcelMarca" modal="true" draggable="true" closable="true" resizable="true" showHeader="true">
+<!--            <ui:include src="frmMarcaExcel.xhtml" />-->
+        </p:dialog>
+        <p:dialog header="Carga de Grafica Swf" widgetVar="frmMarcaGraficaSwf" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+<!--            <ui:include src="frmMarcaGraficaSwf.xhtml" />-->
+        </p:dialog>                
+        <p:dialog header="Carga de Grafica Lineas" widgetVar="frmMarcaGraficaLineas" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+<!--            <ui:include src="frmMarcaGraficaLineas.xhtml" />-->
+        </p:dialog> 
+            <p:dialog header="Catalogo de Segmentos" widgetVar="dialogoSegmento" modal="true" appendTo="@(body)" draggable="true" closable="true"  showHeader="true" width="800" height="600">
+                <ui:include src="../Segmento/frmSegmento.xhtml" />
+            </p:dialog>                        
+
+</ui:composition>                
+    </h:body>    
+</html>

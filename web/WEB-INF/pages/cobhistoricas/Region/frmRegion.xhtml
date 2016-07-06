@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Catalogo de Region</title>    
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../../js/util.js"/>        
+    </h:head>
+    <h:body>
+        <h1>Catalogos</h1>
+        <h:form id="formRegion" >
+            <p:growl id="msgsCat" showDetail="true"/>
+            <p:messages showDetail="true" closable="true"/>
+            <p:panel header="Catalogo de Regiones" id="panelRegion">                                                    
+                <h:panelGrid columns="1">
+                    <p:dataTable id="tableRegion" var="region" value="#{mktCobhDimRegionBean.regiones}" rowKey="#{region.pkRegion}" selection="#{mktCobhDimRegionBean.regionSeleccionado}" selectionMode="single" paginator="true" paginatorPosition="bottom" rows="20" widgetVar="vtableRegion" >
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Filtro Rapido:" />
+                                <p:inputText id="globalFilter" onkeyup="PF('vtableregion').filter()" style="width:200px" placeholder="buscar....."/>
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/excel.png" />
+                                    <p:dataExporter type="xls" encoding="ISO-8859-1" target="tableRegion" fileName="Regiones" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/pdf.png" />
+                                    <p:dataExporter type="pdf" encoding="ISO-8859-1" target="tableRegion" fileName="Regiones" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage  url="../../../images/csv.png" />
+                                    <p:dataExporter encoding="ISO-8859-1" type="csv" target="tableRegion" fileName="Regiones" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/xml.png" />
+                                    <p:dataExporter type="xml" encoding="ISO-8859-1" target="tableRegion" fileName="Regiones" pageOnly="true" />
+                                </h:commandLink>                                                        
+
+                                <p:graphicImage url="../../../images/importarexcel.png" onclick="PF('frmExcel').show();" style="cursor: pointer;"/>
+                                <p:graphicImage url="../../../images/grafica.png" onclick="PF('frmRegionGraficaSwf').show();" style="cursor: pointer;" />                                                               
+                                <p:graphicImage url="../../../images/grafica.png" onclick="PF('frmRegionGraficaLineas').show();" style="cursor: pointer;" />                                                               
+                                
+                                <p:commandLink  update=":formRegion:panelRegion,:formDialogRegion:panelDialogRegion" actionListener="#{mktCobhDimRegionBean.refreshRegiones}" >
+                                    <p:graphicImage url="../../../images/refrescar.png" style="cursor: pointer;"/>
+                                </p:commandLink>
+
+
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column headerText="Num.Region" filterBy="#{region.pkRegion}" sortBy="#{region.pkRegion}" >
+                            <h:outputText value="#{region.pkRegion}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Clave" filterBy="#{region.gvRegion}" filterMatchMode="contains" sortBy="#{region.pkRegion}">
+                            <h:outputText value="#{region.gvRegion}"/>
+                        </p:column>
+
+                        <p:column headerText="Estado" filterBy="#{region.fkEstado}" filterMatchMode="contains" sortBy="#{region.fkEstado}">
+                            <h:outputText value="#{region.fkEstado}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Nombre Region" filterBy="#{region.region}" sortBy="#{region.pkregion}" filterMatchMode="contains">
+                            <h:outputText value="#{region.region}"/>
+                        </p:column>   
+
+                        <f:facet name="footer">
+                            Total de registros #{mktCobhDimRegionBean.regiones.size()}
+                            Suma Total: #{mktCobhDimRegionBean.sumaRegion()}
+                        </f:facet>                        
+
+                        <p:ajax event="rowSelect" update=":formRegion:panelRegion,:formDialogRegion:panelDialogRegion" listener="#{mktCobhDimRegionBean.selectRegion}" onsuccess="PF('dialogDetalle').show();"/>
+
+                    </p:dataTable>
+
+                </h:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="Nuevo" update=":formRegion:panelRegion,:formDialogRegion:panelDialogRegion" actionListener="#{mktCobhDimRegionBean.nuevoRegion}" oncomplete="PF('dialogDetalle').show();"/>
+                    <p:commandButton value="Importar Excel" onclick="PF('frmExcel').show()"/>
+                    <p:commandButton value="Refrescar" update=":formRegion:panelRegion,:formDialogRegion:panelDialogRegion" actionListener="#{mktCobhDimRegionBean.refreshRegiones}"/>
+                    <p:commandButton value="Exportar Excel" update="formRegion"/>                          
+                    
+                </f:facet>
+            </p:panel>
+        </h:form>              
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+        <p:dialog header="DETALLE DE REGIONES" widgetVar="dialogDetalle" minHeight="40" modal="true" id="dialogDetalle">
+            <h:form id="formDialogRegion">
+                <p:growl id="msgsDialogRegion" showDetail="true"/>
+                <p:panel>
+                    <h:panelGrid columns="4" cellpadding="5px" id="panelDialogRegion">
+                        <p:outputLabel for="gvRegion" value="Clave Region:" />
+                        <p:inputText id="gvRegion" maxlength="20" value="#{mktCobhDimRegionBean.regionNuevo.gvRegion}"/>
+
+                        <p:outputLabel for="idEstado" value="Estado:" />
+                        
+                        <p:selectOneMenu id="idEstado" value="#{mktCobhDimRegionBean.regionNuevo.getfkEstado}" converter="estadoConverter" label="Estado" immediate="true">
+                            <f:selectItem itemLabel="Seleccione" itemValue="" />
+                            <f:selectItems value="#{mktCobhDimRegionBean.catEstados}"/> 
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel for="region" value="Nombre Region:" />
+                        <p:inputText id="region" required="true" maxlength="50" value="#{mktCobhDimRegionBean.regionNuevo.region}"/>                                                   
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2" cellspacing="10px">
+                                <p:commandButton value="Guardar" update=":formRegion:tableRegion,:formDialogRegion" actionListener="#{mktCobhDimRegionBean.saveRegion}" onsuccess="PF('dialogDetalle').hide();">
+                                    <p:confirm message="Esta seguro?" header="Guardar"/>
+                                </p:commandButton>
+                                <p:commandButton value="Eliminar" update="formRegion" actionListener="#{mktCobhDimRegionBean.eliminarRegion}" rendered="#{mktCobhDimRegionBean.regionNuevo.pkRegion ne null ? true : false}" onsuccess="PF('dialogDetalle').hide();">
+                                    <p:confirm message="Esta seguro?" header="Eliminar"/>
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </f:facet>
+                    </h:panelGrid>                
+                </p:panel>
+            </h:form>
+        </p:dialog>
+        <p:ajaxStatus style="position: fixed;display:block;bottom:100px;right: 20px;height:24px;"  onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>                   
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+            <p style="font-size:14px; text-align: center;">
+                <p:graphicImage value="/images/loading.gif" />
+                <p style="font-size:14px;">
+                    Loading...
+                </p>                
+            </p>
+        </p:dialog>
+        <p:graphicImage  value="/images/loading.gif" style="position: fixed;display:block;bottom:10px;right: 10px;height:100px; display: none;" id="loadingGIF"/>
+        <p:dialog header="Carga de archivo" widgetVar="frmExcel" modal="true" draggable="true" closable="true" resizable="true" showHeader="true">
+            <ui:include src="frmRegionExcel.xhtml" />
+        </p:dialog>
+        <p:dialog header="Carga de Grafica Swf" widgetVar="frmRegionGraficaSwf" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+            <ui:include src="frmRegionGraficaSwf.xhtml" />
+        </p:dialog>                
+        <p:dialog header="Carga de Grafica Lineas" widgetVar="frmRegionGraficaLineas" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+            <ui:include src="frmRegionGraficaLineas.xhtml" />
+        </p:dialog>                        
+    </h:body>
+</html>

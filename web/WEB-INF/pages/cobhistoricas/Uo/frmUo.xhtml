@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Catalogo de Uo</title>    
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../../js/util.js"/>        
+    </h:head>
+    <h:body>
+        <h1>Catalogos</h1>
+        <h:form id="formUo" >
+            <p:growl id="msgsCat" showDetail="true"/>
+            <p:messages showDetail="true" closable="true"/>
+            <p:panel header="Catalogo de Uoes" id="panelUo">                                                    
+                <h:panelGrid columns="1">
+                    <p:dataTable id="tableUo" var="uo" value="#{mktCobhDimUoBean.uoes}" rowKey="#{uo.pkUo}" selection="#{mktCobhDimUoBean.uoSeleccionado}" selectionMode="single" paginator="true" paginatorPosition="bottom" rows="20" widgetVar="vtableUo" >
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Filtro Rapido:" />
+                                <p:inputText id="globalFilter" onkeyup="PF('vtableuo').filter()" style="width:200px" placeholder="buscar....."/>
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/excel.png" />
+                                    <p:dataExporter type="xls" encoding="ISO-8859-1" target="tableUo" fileName="Uoes" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/pdf.png" />
+                                    <p:dataExporter type="pdf" encoding="ISO-8859-1" target="tableUo" fileName="Uoes" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage  url="../../../images/csv.png" />
+                                    <p:dataExporter encoding="ISO-8859-1" type="csv" target="tableUo" fileName="Uoes" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/xml.png" />
+                                    <p:dataExporter type="xml" encoding="ISO-8859-1" target="tableUo" fileName="Uoes" pageOnly="true" />
+                                </h:commandLink>                                                        
+
+                                <p:graphicImage url="../../../images/importarexcel.png" onclick="PF('frmExcel').show();" style="cursor: pointer;"/>
+                                <p:graphicImage url="../../../images/grafica.png" onclick="PF('frmUoGraficaSwf').show();" style="cursor: pointer;" />                                                               
+                                <p:graphicImage url="../../../images/grafica.png" onclick="PF('frmUoGraficaLineas').show();" style="cursor: pointer;" />                                                               
+                                
+                                <p:commandLink  update=":formUo:panelUo,:formDialogUo:panelDialogUo" actionListener="#{mktCobhDimUoBean.refreshUoes}" >
+                                    <p:graphicImage url="../../../images/refrescar.png" style="cursor: pointer;"/>
+                                </p:commandLink>
+
+
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column headerText="Num.Uo" filterBy="#{uo.pkUo}" sortBy="#{uo.pkUo}" >
+                            <h:outputText value="#{uo.pkUo}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Clave" filterBy="#{uo.gvUo}" filterMatchMode="contains" sortBy="#{uo.pkUo}">
+                            <h:outputText value="#{uo.gvUo}"/>
+                        </p:column>
+
+                        <p:column headerText="Estado" filterBy="#{uo.fkEstado}" filterMatchMode="contains" sortBy="#{uo.fkEstado}">
+                            <h:outputText value="#{uo.fkEstado}"/>
+                        </p:column>
+
+                        <p:column headerText="Region" filterBy="#{uo.fkRegion}" filterMatchMode="contains" sortBy="#{uo.fkRegion}">
+                            <h:outputText value="#{uo.fkRegion}"/>
+                        </p:column>
+
+                        
+                        <p:column headerText="Nombre Uo" filterBy="#{uo.uo}" sortBy="#{uo.pkuo}" filterMatchMode="contains">
+                            <h:outputText value="#{uo.uo}"/>
+                        </p:column>   
+
+                        <f:facet name="footer">
+                            Total de registros #{mktCobhDimUoBean.uoes.size()}
+                            Suma Total: #{mktCobhDimUoBean.sumaUo()}
+                        </f:facet>                        
+
+                        <p:ajax event="rowSelect" update=":formUo:panelUo,:formDialogUo:panelDialogUo" listener="#{mktCobhDimUoBean.selectUo}" onsuccess="PF('dialogDetalle').show();"/>
+
+                    </p:dataTable>
+
+                    <h3>Exportar</h3>
+
+
+                </h:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="Nuevo" update=":formUo:panelUo,:formDialogUo:panelDialogUo" actionListener="#{mktCobhDimUoBean.nuevoUo}" oncomplete="PF('dialogDetalle').show();"/>
+                    <p:commandButton value="Importar Excel" onclick="PF('frmExcel').show()"/>
+                    <p:commandButton value="Refrescar" update=":formUo:panelUo,:formDialogUo:panelDialogUo" actionListener="#{mktCobhDimUoBean.refreshUoes}"/>
+                    <p:commandButton value="Exportar Excel" update="formUo"/>                          
+                    
+                </f:facet>
+            </p:panel>
+        </h:form>              
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+        <p:dialog header="DETALLE DE UOES" widgetVar="dialogDetalle" minHeight="40" modal="true" id="dialogDetalle">
+            <h:form id="formDialogUo">
+                <p:growl id="msgsDialogUo" showDetail="true"/>
+                <p:panel>
+                    <h:panelGrid columns="4" cellpadding="5px" id="panelDialogUo">
+                        <p:outputLabel for="gvUo" value="Clave Uo:" />
+                        <p:inputText id="gvUo" maxlength="20" value="#{mktCobhDimUoBean.uoNuevo.gvUo}"/>
+                        <p:outputLabel for="uo" value="Nombre Uo:" />
+                        <p:inputText id="uo" required="true" maxlength="50" value="#{mktCobhDimUoBean.uoNuevo.uo}"/>                                                   
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2" cellspacing="10px">
+                                <p:commandButton value="Guardar" update=":formUo:tableUo,:formDialogUo" actionListener="#{mktCobhDimUoBean.saveUo}" onsuccess="PF('dialogDetalle').hide();">
+                                    <p:confirm message="Esta seguro?" header="Guardar"/>
+                                </p:commandButton>
+                                <p:commandButton value="Eliminar" update="formUo" actionListener="#{mktCobhDimUoBean.eliminarUo}" rendered="#{mktCobhDimUoBean.uoNuevo.pkUo ne null ? true : false}" onsuccess="PF('dialogDetalle').hide();">
+                                    <p:confirm message="Esta seguro?" header="Eliminar"/>
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </f:facet>
+                    </h:panelGrid>                
+                </p:panel>
+            </h:form>
+        </p:dialog>
+        <p:ajaxStatus style="position: fixed;display:block;bottom:100px;right: 20px;height:24px;"  onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>                   
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+            <p style="font-size:14px; text-align: center;">
+                <p:graphicImage value="/images/loading.gif" />
+                <p style="font-size:14px;">
+                    Loading...
+                </p>                
+            </p>
+        </p:dialog>
+        <p:graphicImage  value="/images/loading.gif" style="position: fixed;display:block;bottom:10px;right: 10px;height:100px; display: none;" id="loadingGIF"/>
+        <p:dialog header="Carga de archivo" widgetVar="frmExcel" modal="true" draggable="true" closable="true" resizable="true" showHeader="true">
+            <ui:include src="frmUoExcel.xhtml" />
+        </p:dialog>
+        <p:dialog header="Carga de Grafica Swf" widgetVar="frmUoGraficaSwf" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+            <ui:include src="frmUoGraficaSwf.xhtml" />
+        </p:dialog>                
+        <p:dialog header="Carga de Grafica Lineas" widgetVar="frmUoGraficaLineas" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+            <ui:include src="frmUoGraficaLineas.xhtml" />
+        </p:dialog>                        
+    </h:body>
+</html>

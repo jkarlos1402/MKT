@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Catalogo de Canal</title>    
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../../js/util.js"/>        
+    </h:head>
+    <h:body>
+        <ui:composition>
+            <h1>Catalogos de Canales</h1>
+            <h:form id="formCanal" >
+                <p:growl id="msgsCatCanal" showDetail="true"/>
+                <p:messages showDetail="true" closable="true"/>
+                <p:panel id="panelCanal" header="Cat&aacute;logo de Canales">                                                    
+                    <h:panelGrid columns="1">
+                        <p:dataTable id="tableCanal" var="canal" value="#{mktCobhDimCanalBean.canales}" rowKey="#{canal.pkCanal}" selection="#{mktCobhDimCanalBean.canalSeleccionado}" selectionMode="single" paginator="true" paginatorPosition="bottom" rows="20" widgetVar="vtableCanal" >
+                            <f:facet name="header">
+                                <p:outputPanel>
+                                    <h:outputText value="Filtro Rapido:" />
+                                    <p:inputText id="globalFilterCanal" onkeyup="PF('vtableCanal').filter()" style="width:200px" placeholder="buscar....."/>
+                                    <h:commandLink>
+                                        <p:graphicImage url="/images/excel.png" />
+                                        <p:dataExporter type="xls" encoding="ISO-8859-1" target="tableCanal" fileName="Canales" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage url="/images/pdf.png" />
+                                        <p:dataExporter type="pdf" encoding="ISO-8859-1" target="tableCanal" fileName="Canales" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage  url="/images/csv.png" />
+                                        <p:dataExporter encoding="ISO-8859-1" type="csv" target="tableCanal" fileName="Canales" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage url="/images/xml.png" />
+                                        <p:dataExporter type="xml" encoding="ISO-8859-1" target="tableCanal" fileName="Canales" />
+                                    </h:commandLink>                                                        
+
+                                    <p:graphicImage url="/images/importarexcel.png" onclick="PF('frmExcelCanal').show();" style="cursor: pointer;"/>
+                                    
+                                    <p:commandLink  update=":formCanal:panelCanal,:formDialogCanal:panelDialogCanal" actionListener="#{mktCobhDimCanalBean.refreshCanales}" >
+                                        <p:graphicImage url="/images/refrescar.png" style="cursor: pointer;"/>
+                                    </p:commandLink>
+                                </p:outputPanel>
+                            </f:facet>
+
+                            <p:column headerText="Num.Canal" filterBy="#{canal.pkCanal}" sortBy="#{canal.pkCanal}" >
+                                <h:outputText value="#{canal.pkCanal}"/>
+                            </p:column>
+
+                            <p:column headerText="Clave" filterBy="#{canal.gvCanal}" filterMatchMode="contains" sortBy="#{canal.pkCanal}">
+                                <h:outputText value="#{canal.gvCanal}"/>
+                            </p:column>
+                            <p:column headerText="Nombre Canal" filterBy="#{canal.canaltexto}" sortBy="#{canal.canaltexto}" filterMatchMode="contains">
+                                <h:outputText value="#{canal.canaltexto}"/>
+                            </p:column>   
+
+                            <f:facet name="footer">
+                                Total de registros #{mktCobhDimCanalBean.canales.size()}
+                                Suma Total: #{mktCobhDimCanalBean.sumaCanal()}
+                            </f:facet>                        
+                            <p:ajax event="rowSelect" update=":formCanal:panelCanal,:formDialogCanal:panelDialogCanal" listener="#{mktCobhDimCanalBean.selectCanal}" onsuccess="PF('dialogDetalleCanal').show();"/>
+                        </p:dataTable>
+                        <h3>Exportar</h3>
+                    </h:panelGrid>
+                    <f:facet name="footer">
+                        <p:commandButton value="Nuevo" update=":formCanal:panelCanal,:formDialogCanal:panelDialogCanal" actionListener="#{mktCobhDimCanalBean.nuevoCanal()}" oncomplete="PF('dialogDetalleCanal').show();"/>
+                        <p:commandButton value="Importar Excel" onclick="PF('frmExcelCanal').show()"/>
+                        <p:commandButton value="Refrescar" update=":formCanal:panelCanal,:formDialogCanal:panelDialogCanal" actionListener="#{mktCobhDimCanalBean.refreshCanales}"/>
+                        <p:commandButton value="Exportar Excel" update="formCanal"/>                          
+                    </f:facet>
+                </p:panel>
+            </h:form>              
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+            <p:dialog header="DETALLE DE CANAL" widgetVar="dialogDetalleCanal" appendTo="@(body)" minHeight="40" modal="true" id="dialogDetalleCanal">
+                <h:form id="formDialogCanal">
+                    <p:growl id="msgsDialogCanal" showDetail="true"/>
+                    <p:panel>
+                        <h:panelGrid columns="4" cellpadding="5px" id="panelDialogCanal">
+                            <p:outputLabel for="gvCanal" value="Clave Canal:" />
+                            <p:inputText id="gvCanal" maxlength="20" value="#{mktCobhDimCanalBean.canalNuevo.gvCanal}"/>
+                            <p:outputLabel for="canalTexto" value="Nombre canal:" />
+                            <p:inputText id="canalTexto" required="true" maxlength="50" value="#{mktCobhDimCanalBean.canalNuevo.canaltexto}"/>                                                   
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2" cellspacing="10px">
+                                    <p:commandButton value="Guardar" update=":formCanal:tableCanal,:formDialogCanal" actionListener="#{mktCobhDimCanalBean.saveCanal}" onsuccess="PF('dialogDetalleCanal').hide();">
+                                        <p:confirm message="Esta seguro?" header="Guardar"/>
+                                    </p:commandButton>
+                                    <p:commandButton value="Eliminar" update=":formCanal:tableCanal,:formDialogCanal" actionListener="#{mktCobhDimCanalBean.eliminarCanal}" onsuccess="PF('dialogDetalleCanal').hide();">
+                                        <p:confirm message="Esta seguro?" header="Eliminar"/>
+                                    </p:commandButton>
+                                </h:panelGrid>
+                            </f:facet>
+                        </h:panelGrid>                
+                    </p:panel>
+                </h:form>
+            </p:dialog>                       
+            <p:dialog header="Carga de archivo" widgetVar="frmExcelCanal" modal="true" appendTo="@(body)" draggable="true" closable="true" resizable="true" showHeader="true">
+                <ui:include src="frmCanalExcel.xhtml" />
+                <p:ajax event="close" update=":formCanal" listener="#{mktCobhDimCanalBean.refreshCanales()}"/>
+            </p:dialog>
+        </ui:composition>
+    </h:body>
+</html>

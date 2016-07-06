@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <ui:composition>           
+            <c:if test="#{mainBean.usuario.rol.menuList.contains(menuItem)}">
+                <li>              
+                    <p:commandLink  action="#{mainBean.muestraPage(menuItem.url)}" update="dialogSetVentana" oncomplete="PF('dialogSetVentana').show();" onclick="#{menuItem.menusHijo ne null and !menuItem.menusHijo.isEmpty() ? 'return false;' : ''}">
+                        <img src="images/BG9-19.png" width="17" height="16" />#{menuItem.nombre}
+                    </p:commandLink> 
+                    <c:if test="#{menuItem.menusHijo ne null and !menuItem.menusHijo.isEmpty()}">                       
+                        <ul>                            
+                            <c:forEach var="item" items="#{menuItem.menusHijo}">                                
+                                <ui:include  src="generadorMenu.xhtml"> 
+                                    <ui:param name="menuItem" value="#{item}"/>
+                                </ui:include>                                                                    
+                            </c:forEach> 
+                        </ul>
+                    </c:if>                
+                </li>
+            </c:if>            
+        </ui:composition>
+    </h:body>
+</html>
+

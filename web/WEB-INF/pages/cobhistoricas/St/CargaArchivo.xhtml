@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Load Information</title>    
+
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../js/util.js"/>
+    </h:head>                 
+    <h:body>    
+        <ui:composition>
+            <h:form id="formLoadMktDatosArchivo">
+                <p:panel id="panelLoadMktDatos" header="Carga de archivos .xlsx">  
+                    <p:growl id="messagesLoadMktDatos" showDetail="true"/>
+                    <h:panelGrid columns="1" cellspacing="5px" style="width: 100%;">
+                        <p:messages showDetail="true" closable="true"/>
+                        <p:panel>
+                            <h:panelGrid columns="2" columnClasses="column50 topElemsClass,column50 topElemsClass">
+                                <p:fileUpload fileUploadListener="#{mktLoadBean.handleFileUploadMktDatos}" multiple="true"  mode="advanced" dragDropSupport="true" 
+                                              update="messagesLoadMktDatos,panelLoadMktDatos" sizeLimit="100000000" fileLimit="20" allowTypes="/(\.|\/)(xlsx|XLSX)$/" 
+                                              onstart="handleResponse(1)" oncomplete="handleResponse(2)" cancelLabel="Cancelar" uploadLabel="Subir" label="Elegir"
+                                              value="#{mktLoadBean.uploadedFile}" invalidFileMessage="Se requiere un archivo de tipo xlsx file."
+                                              fileLimitMessage="Se ha sobre pasado el m&aacute;ximo de archivos permitidos (20)"
+                                              rendered="#{mktLoadBean.bndMuestraChoose}"/>
+
+                                <h:panelGrid columns="2" columnClasses="column50 topElemsClass,column50 topElemsClass">                                    
+                                    <p:dataList value="#{mktLoadBean.logsCarga}" var="cargaEnc" rows="1" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros" rendered="#{mktLoadBean.logsCarga ne null and mktLoadBean.logsCarga.get(0) ne null ? true : false}">
+                                        <f:facet name="header" rendered="#{cargaEnc.inicio ne null ? true : false}">                                             
+                                            #{mktLoadBean.logsCarga.get(0).pkIdregistro}. Fecha de Ejecuci&oacute;n: #{mktLoadBean.formatFecha.format(mktLoadBean.logsCarga.get(0).inicio)} Hora: #{mktLoadBean.formatHora.format(mktLoadBean.logsCarga.get(0).inicio)}
+                                        </f:facet>
+                                        <h:panelGrid columns="2" columnClasses="label,value">
+                                            <h:outputText value="Proyecto:" />
+                                            <h:outputText value="#{cargaEnc.fkProyecto ne null ? cargaEnc.fkProyecto.nombreProyecto : ''}" />
+
+                                            <h:outputText value="Proceso:" />
+                                            <h:outputText value="#{cargaEnc.nombreProceso}" />
+
+                                            <h:outputText value="Datos procesados:" />
+                                            <h:outputText value="#{cargaEnc.totalprocesados}">
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Registros:" />
+                                            <h:outputText value="#{cargaEnc.totalregistros}" >
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Errores:" />
+                                            <h:outputText value="#{cargaEnc.totalerror}" >
+                                            <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Archivos:" />
+                                            <h:outputText value="#{cargaEnc.totalarchivos ne null ? cargaEnc.totalarchivos : 0}" />
+
+                                            <h:outputText value="Estatus:" />
+                                            <h:outputText value="#{cargaEnc.fkIdstatus ne null ? cargaEnc.fkIdstatus.descripcion : ''}" />
+                                        </h:panelGrid>
+                                    </p:dataList>  
+                                    <p:dataList value="#{mktLoadBean.logsCarga.get(0).mktCobhLogDetList}" var="cargaDet" rows="1" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros" rendered="#{mktLoadBean.logsCarga.get(0).mktCobhLogDetList ne null and mktLoadBean.logsCarga.get(0).mktCobhLogDetList.size() > 0 ? true : false}">
+                                        <f:facet name="header">                                             
+                                            Detalle del proceso
+                                        </f:facet>
+                                        <h:panelGrid columns="2" style="width:100%" columnClasses="label column40,value column60">                                            
+                                            <h:outputText value="Id:" />
+                                            <h:outputText value="#{cargaDet.pkIdregistrodet}" />
+
+                                            <h:outputText value="Nombre del archivo origen:" />
+                                            <h:outputText value="#{cargaDet.nomarchivoOrigen.length() > 30 ? cargaDet.nomarchivoOrigen.substring(cargaDet.nomarchivoOrigen.length() - 30, cargaDet.nomarchivoOrigen.length()) : cargaDet.nomarchivoOrigen}" />
+
+                                            <h:outputText value="Nombre del archivo de respaldo:" />
+                                            <h:outputText value="#{cargaDet.nomarchivoBak}" />
+
+                                            <h:outputText value="Fecha :" />
+                                            <h:outputText value="#{mktLoadBean.formatFecha.format(cargaDet.inicio)}" />
+
+                                            <h:outputText value="Hora inicio/fin:" />
+                                            <h:outputText value="#{mktLoadBean.formatHora.format(cargaDet.inicio)} / #{mktLoadBean.formatHora.format(cargaDet.final1)} (#{cargaDet.tiempo} seg.)" />
+
+                                            <h:outputText value="Total de registros:" />
+                                            <h:outputText value="#{cargaDet.totalregistros}">
+                                                <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                            </h:outputText>
+
+                                            <h:outputText value="Estatus:" />
+                                            <h:outputText value="#{cargaDet.fkIdstatus ne null ? cargaDet.fkIdstatus.descripcion : ''}" />
+
+                                        </h:panelGrid>
+                                    </p:dataList>                                    
+                                </h:panelGrid>
+                            </h:panelGrid>                            
+                        </p:panel>                        
+                        <p:separator />                                                
+                        <p:fieldset legend="Summary" style="margin-bottom:20px">
+
+                            <h:panelGrid columns="3">
+                                <h:outputText value="No se encontraron registros." rendered="#{mktLoadBean.numRegistros == 0 ? true : false}"/>
+                                <h:outputText value="Registros encontrados: " rendered="#{mktLoadBean.numRegistros > 0 ? true : false}"/>                                
+                                <h:outputText value="#{mktLoadBean.numRegistros}" rendered="#{mktLoadBean.numRegistros > 0 ? true : false}">
+                                    <f:convertNumber pattern="###,###" locale="ja_JP" />
+                                </h:outputText>                                
+                                <p:commandButton value="Carga universo" actionListener="#{mktLoadBean.ejecutaScript}" update=":formLoadMktDatosArchivo">
+                                    <p:confirm message="&iquest;Est&aacute; Seguro?" header="Ejecutar Script"/>
+                                </p:commandButton>
+                            </h:panelGrid>                            
+
+                            <h:panelGrid columns="3" cellspacing="5px" style="width: 100%;" columnClasses="topElemsClass,topElemsClass,topElemsClass">
+                                <p:dataList value="#{mktLoadBean.omittedSheets}" var="omittedSheet" rows="2" type="ordered" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros">
+                                    <f:facet name="header">
+                                        Hojas Omitidas
+                                    </f:facet>
+                                    #{omittedSheet}
+                                </p:dataList>
+                                <p:dataList value="#{mktLoadBean.loadedSheets}" var="loadedSheet" rows="2" type="ordered" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros">
+                                    <f:facet name="header">
+                                        Hojas Cargadas
+                                    </f:facet>
+                                    <h:outputText value="#{loadedSheet}"/>
+                                </p:dataList>
+                                <p:dataList value="#{mktLoadBean.errors}" var="errorSheet" rows="2" type="ordered" paginator="true" paginatorPosition="bottom" paginatorAlwaysVisible="false" emptyMessage="No se encontraron registros">
+                                    <f:facet name="header">
+                                        Errores
+                                    </f:facet>
+                                    #{errorSheet}
+                                </p:dataList>
+                            </h:panelGrid>
+                        </p:fieldset>                        
+                        <f:facet name="footer">
+                            <p:commandButton value="Save" actionListener="#{mktLoadBean.saveInfoDatos}" update=":formLoadMktDatosArchivo" rendered="#{mktLoadBean.numRegistros > 0 ? true : false}">
+                                <p:confirm message="&iquest;Est&aacute; Seguro de guardar?" header="Cargar Registros a Base"/>
+                            </p:commandButton>                        
+                        </f:facet>
+                    </h:panelGrid>                
+                </p:panel>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>                
+            </h:form> 
+        </ui:composition>                   
+    </h:body>
+</html>
+

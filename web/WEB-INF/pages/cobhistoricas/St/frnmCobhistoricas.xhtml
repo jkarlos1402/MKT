@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Load Information</title>    
+
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../js/util.js"/>
+    </h:head>                 
+    <h:body>
+        <h1>Information Load</h1>
+        <h:form id="formLoadMktDatos">
+            <p:panel id="panelLoadMktDatos" header="Datos">  
+                <p:growl id="messagesLoadMktDatos" showDetail="true"/>
+                <h:panelGrid columns="1" cellspacing="5px" style="width: 100%;">
+                    <p:messages showDetail="true" closable="true"/>
+
+                    <p:fileUpload fileUploadListener="#{mktLoadBean.handleFileUploadMktDatos}" mode="advanced" dragDropSupport="true" 
+                                  update="messagesLoadMktDatos,panelLoadMktDatos" sizeLimit="100000000" fileLimit="1" allowTypes="/(\.|\/)(xlsx|XLSX)$/" 
+                                  onstart="handleResponse(1)" oncomplete="handleResponse(2)"
+                                  value="#{mktLoadBean.uploadedFile}" invalidFileMessage="Se requiere un archivo de tipo xlsx file."/>
+                    <p:separator />
+                    <h3>Resume</h3>
+                    <p:panel>
+                        <h:panelGrid columns="2">
+                            <h:outputText value="no hay registros." rendered="#{mktLoadBean.numRegistros == 0 ? true : false}"/>
+                            <h:outputText value="registros encontrados: " rendered="#{mktLoadBean.numRegistros > 0 ? true : false}"/>
+                            <h:outputText value="#{mktLoadBean.numRegistros}" rendered="#{mktLoadBean.numRegistros > 0 ? true : false}"/>                                
+                        </h:panelGrid>
+                    </p:panel>
+                    <p:panel>
+                        <h:panelGrid columns="3" cellspacing="5px" style="width: 100%;" columnClasses="topElemsClass,topElemsClass,topElemsClass">
+                            <p:dataList value="#{mktLoadBean.omittedSheets}" var="omittedSheet" type="ordered">
+                                <f:facet name="header">
+                                    Hojas Omitidas
+                                </f:facet>
+                                #{omittedSheet}
+                            </p:dataList>
+                            <p:dataList value="#{mktLoadBean.loadedSheets}" var="loadedSheet" type="ordered">
+                                <f:facet name="header">
+                                    Hojas Cargadas
+                                </f:facet>
+                                <h:outputText value="#{loadedSheet}"/>
+                            </p:dataList>
+                            <p:dataList value="#{mktLoadBean.errors}" var="errorSheet" type="ordered">
+                                <f:facet name="header">
+                                    Errores
+                                </f:facet>
+                                #{errorSheet}
+                            </p:dataList>
+                        </h:panelGrid>
+                    </p:panel>
+                    <f:facet name="footer">
+                        <p:commandButton value="Save" actionListener="#{mktLoadBean.saveInfoDatos}" update=":formLoadMktDatos" rendered="#{mktLoadBean.numRegistros > 0 ? true : false}">
+                            <p:confirm message="Estas Seguro de guardar ?" header="Cargar Registros a Base"/>
+                        </p:commandButton>                        
+                    </f:facet>
+                </h:panelGrid>                
+            </p:panel>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+            <p:ajaxStatus style="position: fixed;display:block;bottom:100px;right: 20px;height:24px;"  onstart="PF('statusDialog').show();" onsuccess="PF('statusDialog').hide()"/>                   
+            <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                <p style="font-size:14px; text-align: center;">
+                    <p:graphicImage value="/images/loading.gif" />
+                    <p style="font-size:14px;">
+                        Loading...
+                    </p>                         
+                </p>
+            </p:dialog>
+            <p:graphicImage  value="/images/loading.gif" style="position: fixed;display:block;bottom:10px;right: 10px;height:100px; display: none;" id="loadingGIF"/>
+        </h:form>            
+    </h:body>
+</html>
+

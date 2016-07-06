@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Catalogo de Gec</title>    
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../../js/util.js"/>        
+    </h:head>
+    <h:body>
+        <h1>Catalogos</h1>
+        <h:form id="formGec" >
+            <p:growl id="msgsCat" showDetail="true"/>
+            <p:messages showDetail="true" closable="true"/>
+            <p:panel header="Catalogo de Gec" id="panelGec">                                                    
+                <h:panelGrid columns="1">
+                    <p:dataTable id="tableGec" var="gec" value="#{mktCobhDimGecBean.gecs}" rowKey="#{gec.pkGec}" selection="#{mktCobhDimGecBean.gecSeleccionado}" selectionMode="single" paginator="true" paginatorPosition="bottom" rows="20" widgetVar="vtableGec" >
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Filtro Rapido:" />
+                                <p:inputText id="globalFilter" onkeyup="PF('vtablegec').filter()" style="width:200px" placeholder="buscar....."/>
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/excel.png" />
+                                    <p:dataExporter type="xls" encoding="ISO-8859-1" target="tableGec" fileName="Geces" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/pdf.png" />
+                                    <p:dataExporter type="pdf" encoding="ISO-8859-1" target="tableGec" fileName="Geces" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage  url="../../../images/csv.png" />
+                                    <p:dataExporter encoding="ISO-8859-1" type="csv" target="tableGec" fileName="Geces" pageOnly="true" />
+                                </h:commandLink> 
+                                <h:commandLink>
+                                    <p:graphicImage url="../../../images/xml.png" />
+                                    <p:dataExporter type="xml" encoding="ISO-8859-1" target="tableGec" fileName="Geces" pageOnly="true" />
+                                </h:commandLink>                                                        
+
+                                <p:graphicImage url="../../../images/importarexcel.png" onclick="PF('frmExcel').show();" style="cursor: pointer;"/>
+                                <p:graphicImage url="../../../images/grafica.png" onclick="PF('frmGecGraficaSwf').show();" style="cursor: pointer;" />                                                               
+                                <p:graphicImage url="../../../images/grafica.png" onclick="PF('frmGecGraficaLineas').show();" style="cursor: pointer;" />                                                               
+                                
+                                <p:commandLink  update=":formGec:panelGec,:formDialogGec:panelDialogGec" actionListener="#{mktCobhDimGecBean.refreshGeces}" >
+                                    <p:graphicImage url="../../../images/refrescar.png" style="cursor: pointer;"/>
+                                </p:commandLink>
+
+
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column headerText="Num.Gec" filterBy="#{gec.pkGec}" sortBy="#{gec.pkGec}" >
+                            <h:outputText value="#{gec.pkGec}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Clave" filterBy="#{gec.gvGec}" filterMatchMode="contains" sortBy="#{gec.pkGec}">
+                            <h:outputText value="#{gec.gvGec}"/>
+                        </p:column>
+                        <p:column headerText="Nombre Gec" filterBy="#{gec.gec}" sortBy="#{gec.pkgec}" filterMatchMode="contains">
+                            <h:outputText value="#{gec.gec}"/>
+                        </p:column>   
+
+                        <f:facet name="footer">
+                            Total de registros #{mktCobhDimGecBean.gecs.size()}
+                            Suma Total: #{mktCobhDimGecBean.sumaGec()}
+                        </f:facet>                        
+
+                        <p:ajax event="rowSelect" update=":formGec:panelGec,:formDialogGec:panelDialogGec" listener="#{mktCobhDimGecBean.selectGec}" onsuccess="PF('dialogDetalle').show();"/>
+
+                    </p:dataTable>
+
+                    <h3>Exportar</h3>
+
+
+                </h:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="Nuevo" update=":formGec:panelGec,:formDialogGec:panelDialogGec" actionListener="#{mktCobhDimGecBean.nuevoGec}" oncomplete="PF('dialogDetalle').show();"/>
+                    <p:commandButton value="Importar Excel" onclick="PF('frmExcel').show()"/>
+                    <p:commandButton value="Refrescar" update=":formGec:panelGec,:formDialogGec:panelDialogGec" actionListener="#{mktCobhDimGecBean.refreshGeces}"/>
+                    <p:commandButton value="Exportar Excel" update="formGec"/>                          
+                    
+                </f:facet>
+            </p:panel>
+        </h:form>              
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+        <p:dialog header="DETALLE DE CANALES" widgetVar="dialogDetalle" minHeight="40" modal="true" id="dialogDetalle">
+            <h:form id="formDialogGec">
+                <p:growl id="msgsDialogGec" showDetail="true"/>
+                <p:panel>
+                    <h:panelGrid columns="4" cellpadding="5px" id="panelDialogGec">
+                        <p:outputLabel for="gvGec" value="Clave Gec:" />
+                        <p:inputText id="gvGec" maxlength="20" value="#{mktCobhDimGecBean.gecNuevo.gvGec}"/>
+                        <p:outputLabel for="gec" value="Nombre Gec:" />
+                        <p:inputText id="gec" required="true" maxlength="50" value="#{mktCobhDimGecBean.gecNuevo.gec}"/>                                                   
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2" cellspacing="10px">
+                                <p:commandButton value="Guardar" update=":formGec:tableGec,:formDialogGec" actionListener="#{mktCobhDimGecBean.saveGec}" onsuccess="PF('dialogDetalle').hide();">
+                                    <p:confirm message="Esta seguro?" header="Guardar"/>
+                                </p:commandButton>
+                                <p:commandButton value="Eliminar" update="formGec" actionListener="#{mktCobhDimGecBean.eliminarGec}" rendered="#{mktCobhDimGecBean.gecNuevo.pkGec ne null ? true : false}" onsuccess="PF('dialogDetalle').hide();">
+                                    <p:confirm message="Esta seguro?" header="Eliminar"/>
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </f:facet>
+                    </h:panelGrid>                
+                </p:panel>
+            </h:form>
+        </p:dialog>
+        <p:ajaxStatus style="position: fixed;display:block;bottom:100px;right: 20px;height:24px;"  onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>                   
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+            <p style="font-size:14px; text-align: center;">
+                <p:graphicImage value="/images/loading.gif" />
+                <p style="font-size:14px;">
+                    Loading...
+                </p>                
+            </p>
+        </p:dialog>
+        <p:graphicImage  value="/images/loading.gif" style="position: fixed;display:block;bottom:10px;right: 10px;height:100px; display: none;" id="loadingGIF"/>
+        <p:dialog header="Carga de archivo" widgetVar="frmExcel" modal="true" draggable="true" closable="true" resizable="true" showHeader="true">
+            <ui:include src="frmGecExcel.xhtml" />
+        </p:dialog>
+        <p:dialog header="Carga de Grafica Swf" widgetVar="frmGecGraficaSwf" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+            <ui:include src="frmGecGraficaSwf.xhtml" />
+        </p:dialog>                
+        <p:dialog header="Carga de Grafica Lineas" widgetVar="frmGecGraficaLineas" modal="true" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+            <ui:include src="frmGecGraficaLineas.xhtml" />
+        </p:dialog>                        
+    </h:body>
+</html>

@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Scripts</title>
+        </f:facet>                     
+    </h:head>       
+    <h:body>
+        <ui:component>
+            <h:form id="formScript">
+                <p:growl id="msgsScript" showDetail="true"/>
+                <p:messages showDetail="true" closable="true"/>
+                <p:panel  header="Scripts - #{mktScriptBean.scriptSelected.descripcion}" id="panelScripts">                                        
+                    <p:panelGrid columns="2" style="width: 100%; border: none;" columnClasses="topElemsClass column30,topElemsClass column70" layout="grid">
+                        <h:panelGrid columns="1" style="width: 100%;" >
+                            <p:dataList value="#{mktScriptBean.scripts}" var="script" type="ordered" itemType="none" paginator="true" rows="4" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+                                <f:facet name="header">
+                                    List of scripts
+                                </f:facet>
+                                <h:panelGrid columns="2" cellspacing="1">
+                                    <p:commandLink update=":formScript"  title="Edit script" styleClass="ui-icon ui-icon-pencil" >
+                                        <f:setPropertyActionListener value="#{script}" target="#{mktScriptBean.scriptSelected}"/>
+                                        <h:outputText value="#{script.descripcion}" />
+                                    </p:commandLink>
+                                    <h:outputText value="#{script.descripcion}" style="display:inline-block"/>
+                                </h:panelGrid>  
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2" cellspacing="3" columnClasses="label topElemsClass,value topElemsClass">
+                                        <p:outputLabel for="descProcesoTxt" value="Descripci&oacute;n: "/>
+                                        <h:outputText id="descProcesoTxt" value="#{mktScriptBean.scriptSelected.descProceso}"/>
+                                    </h:panelGrid>                                    
+                                </f:facet>
+                            </p:dataList>                                                        
+                            <f:facet name="footer">
+                                <h:panelGrid columns="3" style="width: 100%;" >
+                                    <p:commandButton value="Nuevo" id="btnNewScript" update=":formScript,:formNewScript" onclick="PF('dialogScript').show();" actionListener="#{mktScriptBean.nuevo()}"/>
+                                    <p:commandButton rendered="#{mktScriptBean.scriptSelected ne null ? true : false}" value="Ver" actionListener="#{mktScriptBean.verScript}" id="btnVerScript" update=":formNewScript" onclick="PF('dialogScript').show();"/>
+                                </h:panelGrid>
+
+                            </f:facet>
+
+                        </h:panelGrid>                        
+                        <h:panelGrid columns="1" style="width: 100%;" >
+                            <p:inputTextarea value="#{mktScriptBean.scriptText}" rows="20" id="editorScript" style="width: 100%;" autoResize="false" />
+                            <f:facet name="footer">
+                                <h:panelGrid columns="3" style="width: 100%;" >
+                                    <p:commandButton value="Guardar" id="btnSaveScript" update=":formScript" actionListener="#{mktScriptBean.saveScriptSelected}" rendered="#{mktScriptBean.scriptSelected != null ? true : false}">
+                                        <p:confirm message="&iquest;Est&aacute; seguro?" header="Guardar script #{mktScriptBean.scriptSelected.descripcion}"/>
+                                    </p:commandButton>
+                                    <p:commandButton value="Ejecutar" id="btnExeScript"  update=":formScript" actionListener="#{mktScriptBean.executeScriptSelected}" rendered="#{mktScriptBean.scriptSelected != null ? true : false}">
+                                        <p:confirm message="&iquest;Est&aacute; seguro?" header="Ejecutar script #{mktScriptBean.scriptSelected.descripcion}"/>
+                                    </p:commandButton>
+                                    <p:commandButton value="Eliminar" id="btnDelScript" update=":formScript" actionListener="#{mktScriptBean.deleteScriptSelected}" rendered="#{mktScriptBean.scriptSelected != null ? true : false}">
+                                        <p:confirm message="&iquest;Est&aacute; seguro?" header="Eliminar script #{mktScriptBean.scriptSelected.descripcion}"/>
+                                    </p:commandButton>
+                                </h:panelGrid>
+                            </f:facet>                            
+                        </h:panelGrid>
+                        <f:facet name="footer">    
+                            <p:dataList widgetVar="listLog" id="listLog" value="#{mktScriptBean.logs}"  var="log" itemType="none" paginator="true" rows="2" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+                                <f:facet name="header">
+                                    Log
+                                </f:facet>
+                                <h:panelGrid columns="1" cellspacing="1" captionStyle="overflow-y: auto;">                                    
+                                    <h:outputText value="#{log}" style="width: 100%; overflow-y: auto;"/>
+                                </h:panelGrid>                            
+                            </p:dataList>                            
+                        </f:facet>                        
+                    </p:panelGrid>
+                </p:panel>                
+            </h:form>
+            <p:dialog modal="true" appendTo="@(body)" header="Scritp Nuevo" id="dialogScript" widgetVar="dialogScript" minHeight="40">
+                <h:form id="formNewScript">
+                    <p:growl id="msgsNewScript" showDetail="true"/>
+                    <p:messages showDetail="true" closable="true"/>
+                    <p:panel  header="Script nuevo" style="width: 100%" >
+                        <p:panelGrid columns="2" style="border: none;" columnClasses="topElemsClass,topElemsClass">
+                            <p:outputLabel for="scritpName" value="Nombre:" />
+                            <p:inputText disabled="#{mktScriptBean.scriptSelected ne null ? true : false}" id="scritpName" required="true" value="#{mktScriptBean.scritpNuevo.descripcion}" maxlength="100"/>
+
+                            <p:outputLabel for="scritpRuta" value="Ruta:" />
+                            <p:inputText style="width: 100%" disabled="#{mktScriptBean.scriptSelected ne null ? true : false}" id="scritpRuta" required="true" value="#{mktScriptBean.scritpNuevo.ruta}" maxlength="500"/>
+
+
+                            <p:outputLabel for="scritpDescProceso" value="Desc. Proceso:" />
+                            <p:inputTextarea id="scritpDescProceso" value="#{mktScriptBean.scritpNuevo.descProceso}" rows="10" cols="100" autoResize="false"/>                             
+                            
+                            <p:outputLabel for="scritpBase" value="Script base:" />
+                            <p:inputTextarea id="scritpBase" value="#{mktScriptBean.scritpNuevo.script}" rows="10" cols="100" autoResize="false" readonly="true"/>                             
+
+                            <p:outputLabel for="scritpStatus" value="Estatus" />
+                            <p:selectOneRadio id="scritpStatus" layout="pageDirection" required="true" value="#{mktScriptBean.scritpNuevo.idstatus}" >
+                                <f:selectItem itemLabel="Habilitado" itemValue="true" />
+                                <f:selectItem itemLabel="Deshabilitado" itemValue="false" />                            
+                            </p:selectOneRadio>
+                            <f:facet name="footer">
+                                <p:commandButton value="Guardar" id="btnSaveScript" update=":formScript,:formNewScript" actionListener="#{mktScriptBean.saveScriptNew}" oncomplete="PF('dialogScript').hide();">
+                                    <p:confirm message="&iquest;Est&aacute; seguro?" header="Guardar script #{mktScriptBean.scritpNuevo.descripcion}"/>
+                                </p:commandButton>
+                            </f:facet>
+                        </p:panelGrid>                        
+                    </p:panel>
+                </h:form>
+            </p:dialog>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+
+        </ui:component>
+    </h:body>
+</html>
+

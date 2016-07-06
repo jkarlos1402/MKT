@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title>Catalogo de Empaque</title>    
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="css/estilosGenerales.css"/>
+        <script type="text/javascript" src="js/util.js"/>        
+    </h:head>
+    <h:body>
+        <ui:composition>
+            <h1>Catalogos de Empaque</h1>
+            <h:form id="formEmpaque" >
+                <p:growl id="msgsCatEmpaque" showDetail="true"/>
+                <p:messages showDetail="true" closable="true"/>
+                <p:panel header="Catalogo de Empaques" id="panelEmpaque">                                                    
+                    <h:panelGrid columns="1" width="100%">
+                        <p:dataTable id="tableEmpaque" var="empaque" value="#{mktCobhDimEmpaqueBean.empaquees}" rowKey="#{empaque.pkEmpaque}" selection="#{mktCobhDimEmpaqueBean.empaqueSeleccionado}" selectionMode="single" paginator="true" paginatorPosition="bottom" rows="20" widgetVar="vtableEmpaque" >
+                            <f:facet name="header">                                
+                                <p:outputPanel style="text-align: right;">  
+                                    <h:outputText value="Filtro Rapido:" />
+                                    <p:inputText id="globalFilterEmpaque" onkeyup="PF('vtableEmpaque').filter()" style="width:200px" placeholder="buscar....."/>                                    
+                                    <h:commandLink>
+                                        <p:graphicImage url="images/excel.png" />
+                                        <p:dataExporter type="xls" encoding="ISO-8859-1" target="tableEmpaque" fileName="Empaquees" pageOnly="true" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage url="images/pdf.png" />
+                                        <p:dataExporter type="pdf" encoding="ISO-8859-1" target="tableEmpaque" fileName="Empaquees" pageOnly="true" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage  url="images/csv.png" />
+                                        <p:dataExporter encoding="ISO-8859-1" type="csv" target="tableEmpaque" fileName="Empaquees" pageOnly="true" />
+                                    </h:commandLink> 
+                                    <h:commandLink>
+                                        <p:graphicImage url="images/xml.png" />
+                                        <p:dataExporter type="xml" encoding="ISO-8859-1" target="tableEmpaque" fileName="Empaquees" pageOnly="true" />
+                                    </h:commandLink>                                                        
+
+                                    <p:graphicImage url="images/importarexcel.png" onclick="PF('frmExcelEmpaque').show();" style="cursor: pointer;"/>
+                                    <p:graphicImage url="images/grafica.png" onclick="PF('frmEmpaqueGraficaSwf').show();" style="cursor: pointer;" />                                                               
+                                    <p:graphicImage url="images/grafica.png" onclick="PF('frmEmpaqueGraficaLineas').show();" style="cursor: pointer;" />                                                               
+
+                                    <p:commandLink  update=":formEmpaque:panelEmpaque,:formDialogEmpaque:panelDialogEmpaque" actionListener="#{mktCobhDimEmpaqueBean.refreshEmpaquees}" >
+                                        <p:graphicImage url="images/refrescar.png" style="cursor: pointer;"/>
+                                    </p:commandLink>
+                                </p:outputPanel>
+                            </f:facet>
+
+                            <p:column headerText="Num.Empaque" filterBy="#{empaque.pkEmpaque}" sortBy="#{empaque.pkEmpaque}" >
+                                <h:outputText value="#{empaque.pkEmpaque}"/>
+                            </p:column>
+
+                            <p:column headerText="Clave" filterBy="#{empaque.gvEmpaque}" filterMatchMode="contains" sortBy="#{empaque.pkEmpaque}">
+                                <h:outputText value="#{empaque.gvEmpaque}"/>
+                            </p:column>
+
+                            <p:column headerText="Num.Segmento" filterBy="#{empaque.fkseSegmento.pkSegmento}" filterMatchMode="contains" sortBy="#{empaque.fkseSegmento.pkSegmento}" visible="false">
+                                <h:outputText value="#{empaque.fkseSegmento.pkSegmento}"/>
+                            </p:column>
+
+                            <p:column headerText="Segmento" filterBy="#{empaque.fkseSegmento}" filterMatchMode="contains" sortBy="#{empaque.fkseSegmento}">
+                                <h:outputText value="#{empaque.fkseSegmento}"/>
+                            </p:column>
+
+                            <p:column headerText="Num.Marca" filterBy="#{empaque.fkMarca.pkMarca}" filterMatchMode="contains" sortBy="#{empaque.fkMarca.pkMarca}" visible="false">
+                                <h:outputText value="#{empaque.fkMarca.pkMarca}"/>
+                            </p:column>
+
+                            <p:column headerText="Marca" filterBy="#{empaque.fkMarca}" filterMatchMode="contains" sortBy="#{empaque.fkMarca}">
+                                <h:outputText value="#{empaque.fkMarca}"/>
+                            </p:column>
+
+                            <p:column headerText="Nombre Empaque" filterBy="#{empaque.empaque}" sortBy="#{empaque.empaque}" filterMatchMode="contains">
+                                <h:outputText value="#{empaque.empaque}"/>
+                            </p:column>   
+
+                            <f:facet name="footer">
+                                Total de registros #{mktCobhDimEmpaqueBean.empaquees.size()}
+                                Suma Total: #{mktCobhDimEmpaqueBean.sumaEmpaque()}
+                            </f:facet>                        
+
+                            <p:ajax event="rowSelect" update=":formEmpaque:panelEmpaque,:formDialogEmpaque:panelDialogEmpaque" listener="#{mktCobhDimEmpaqueBean.selectEmpaque}" onsuccess="PF('dialogDetalleEmpaque').show();"/>
+
+                        </p:dataTable>
+                    </h:panelGrid>
+                    <f:facet name="footer">
+                        <h3>Exportar</h3>                    
+                        <p:commandButton value="Nuevo" update=":formEmpaque:panelEmpaque,:formDialogEmpaque:panelDialogEmpaque" actionListener="#{mktCobhDimEmpaqueBean.nuevoEmpaque}" oncomplete="PF('dialogDetalleEmpaque').show();"/>
+                        <p:commandButton value="Importar Excel" onclick="PF('frmExcelEmpaque').show()"/>
+                        <p:commandButton value="Refrescar" update=":formEmpaque:panelEmpaque,:formDialogEmpaque:panelDialogEmpaque" actionListener="#{mktCobhDimEmpaqueBean.refreshEmpaquees}"/>
+                        <p:commandButton value="Exportar Excel" update="formEmpaque"/>                          
+
+                    </f:facet>
+                </p:panel>
+            </h:form>              
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+            <p:dialog header="DETALLE DE EMPAQUE" widgetVar="dialogDetalleEmpaque" minHeight="40" modal="true" id="dialogDetalleEmpaque" appendTo="@(body)">
+                <h:form id="formDialogEmpaque">
+                    <p:growl id="msgsDialogEmpaque" showDetail="true"/>
+                    <p:panel>
+                        <h:panelGrid columns="5" cellpadding="5px" id="panelDialogEmpaque">
+                            <p:outputLabel for="gvEmpaque" value="Clave Empaque:" />
+                            <p:inputText id="gvEmpaque" maxlength="20" value="#{mktCobhDimEmpaqueBean.empaqueNuevo.gvEmpaque}"/>
+
+                            <p:outputLabel for="idSegmento" value="Segmento:" />
+                            <p:selectOneMenu id="idSegmento" value="#{mktCobhDimEmpaqueBean.empaqueNuevo.fkseSegmento}" converter="segmentoConverter" label="Segmento" immediate="true">
+                                <f:selectItem itemLabel="Seleccione" itemValue="" />
+                                <f:selectItems value="#{mktCobhDimEmpaqueBean.catSegmentos}"/> 
+                                <p:ajax event="itemSelect" update="idMarca,msgsDialogEmpaque" listener="#{mktCobhDimEmpaqueBean.listener}"/>
+                            </p:selectOneMenu>
+                            <p:commandLink value="..." onclick="PF('dialogoSegmento').show();">                                                        
+                            </p:commandLink>
+
+
+                            <p:outputLabel for="idMarca" value="Marca:" />
+                            <p:selectOneMenu id="idMarca" value="#{mktCobhDimEmpaqueBean.empaqueNuevo.fkMarca}" converter="marcaConverter"  label="Marca" immediate="true">
+                                <f:selectItem itemLabel="Seleccione" itemValue="" />
+                                <f:selectItems value="#{mktCobhDimEmpaqueBean.empaqueNuevo.fkseSegmento.marcas}"/>                                                         
+                            </p:selectOneMenu>
+                                                       
+                            <p:outputLabel for="empaque" value="Nombre Empaque:" />
+                            <p:inputText id="empaque" required="true" maxlength="50" value="#{mktCobhDimEmpaqueBean.empaqueNuevo.empaque}"/>                                                   
+
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2" cellspacing="10px">
+                                    <p:commandButton value="Guardar" update=":formEmpaque:tableEmpaque,:formDialogEmpaque" actionListener="#{mktCobhDimEmpaqueBean.saveEmpaque}" onsuccess="PF('dialogDetalleEmpaque').hide();">
+                                        <p:confirm message="Esta seguro?" header="Guardar"/>
+                                    </p:commandButton>
+                                    <p:commandButton value="Eliminar" update="formEmpaque" actionListener="#{mktCobhDimEmpaqueBean.eliminarEmpaque}" rendered="#{mktCobhDimEmpaqueBean.empaqueNuevo.pkEmpaque ne null ? true : false}" onsuccess="PF('dialogDetalleEmpaque').hide();">
+                                        <p:confirm message="Esta seguro?" header="Eliminar"/>
+                                    </p:commandButton>
+                                </h:panelGrid>
+                            </f:facet>
+                        </h:panelGrid>                
+                    </p:panel>
+                </h:form>
+            </p:dialog>                       
+            <p:dialog header="Carga de archivo" widgetVar="frmExcelEmpaque" modal="true" appendTo="@(body)" draggable="true" closable="true" resizable="true" showHeader="true">
+                <ui:include src="frmEmpaqueExcel.xhtml" />
+            </p:dialog>
+            <p:dialog header="Carga de Grafica Swf" widgetVar="frmEmpaqueGraficaSwf" modal="true" appendTo="@(body)" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+                <!--<ui:include src="frmEmpaqueGraficaSwf.xhtml" />-->
+            </p:dialog>                
+            <p:dialog header="Carga de Grafica Lineas" widgetVar="frmEmpaqueGraficaLineas" modal="true" appendTo="@(body)" draggable="true" closable="true" resizable="true" showHeader="true" width="800" height="600">
+                <!--<ui:include src="frmEmpaqueGraficaLineas.xhtml" />-->
+            </p:dialog>                        
+      
+            <p:dialog header="Catalogo de Segmentos" widgetVar="dialogoSegmento" modal="true" appendTo="@(body)" draggable="true" closable="true"  showHeader="true" width="800" height="600">
+                <ui:include src="../Segmento/frmSegmento.xhtml" />
+                <p:ajax event="close" update=":formDialogEmpaque:idSegmento" listener="#{mktCobhDimEmpaqueBean.refreshSegmentos()}"/>
+            </p:dialog>                                    
+        </ui:composition>
+    </h:body>
+
+</html>
