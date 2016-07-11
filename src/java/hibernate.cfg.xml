@@ -4,7 +4,7 @@
     <session-factory>
 
         <!-- PARA DESARROLLO -->
-        <!--        <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+<!--        <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
         <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
         <property name="hibernate.connection.url">jdbc:oracle:thin:@10.138.3.32:1527:DSE</property>
         <property name="hibernate.connection.username">BOE14DEVHA</property>
@@ -27,7 +27,7 @@
         
         <!-- PARA PRODUCTIVO 2-->
             
-<!--        <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+        <!--        <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
         <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
         <property name="hibernate.connection.url">jdbc:oracle:thin:@10.138.3.223:1527:BSE</property>
         <property name="hibernate.connection.username">BOE14PRDHA</property> 

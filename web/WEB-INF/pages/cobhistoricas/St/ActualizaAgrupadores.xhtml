@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+            <title></title>
+        </f:facet> 
+        <link rel="stylesheet" type="text/css" href="../../css/estilosGenerales.css"/>
+        <script type="text/javascript" src="../../js/util.js"/>
+    </h:head>                 
+    <h:body>    
+        <ui:composition>
+            <h:form id="formActualizaAgrupadores">
+                <p:panel id="panelActualizaAgrupadores" header="Actualiza agrupadores">  
+                    <p:growl id="messagesLoadMktDatos" showDetail="true"/>
+                    <h:panelGrid columns="1" cellspacing="5px" style="width: 100%;">
+                        <p:messages showDetail="true" closable="true"/>
+                        <p:panel>                           
+                            <p:commandButton value="Actualiza agrupadores" actionListener="#{mktLoadBeanDinamico.ejecutaScript(5)}" update=":formActualizaAgrupadores">
+                                <p:confirm header="Actualizar los agrupadores" message="&iquest;Est&aacute; seguro?"/>
+                            </p:commandButton>                         
+                        </p:panel>                        
+                    </h:panelGrid>                
+                </p:panel>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="S&iacute;" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>                
+            </h:form> 
+        </ui:composition>                   
+    </h:body>
+</html>
+
